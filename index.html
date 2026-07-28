@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
   MILLY — Preview sito e-commerce borse artigianali (FILE HTML STATICO UNICO)
-  - Versione corretta: script ripulito, segnaposto immagine sostituiti con SVG inline generati dinamicamente.
+  - Versione corretta: immagini vere da repository
   - Tutte le funzioni principali (carrello, wishlist, quick view, checkout, ricerca, filtri) funzionano.
   - Nessun backend: ordini salvati in localStorage (preview).
 -->
@@ -53,13 +53,6 @@
     .serif{font-family:'Fraunces',serif}
     .eyebrow{font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;font-weight:700}
 
-    /* Placeholder images replaced by real <img> or generated SVG */
-    .ph{
-      position:relative;width:100%;height:100%;
-      display:flex;align-items:center;justify-content:center;overflow:hidden;
-      background:transparent;
-    }
-
     /* NAV */
     header.nav{
       position:fixed;top:0;left:0;right:0;z-index:80;
@@ -75,7 +68,7 @@
     .nav-links a::after{content:"";position:absolute;left:0;bottom:-2px;height:2px;width:0;background:var(--coral);transition:width .35s var(--ease)}
     .nav-links a:hover::after{width:100%}
     .nav-actions{display:flex;align-items:center;gap:14px}
-    .icon-btn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);transition:transform .3s var(--ease),background .3s,color .3s;position:relative;background:#fff}
+    .icon-btn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);transition:transform .3s var(--ease),background .3s,color .3s;position:relative}
     .icon-btn:hover{transform:translateY(-2px);background:var(--ink);color:var(--cream)}
     .icon-btn svg{width:19px;height:19px}
     .badge{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;padding:0 6px;border-radius:20px;background:var(--coral);color:#fff;font-size:.68rem;font-weight:800;display:grid;place-items:center}
@@ -97,7 +90,7 @@
     .hero-cta{display:inline-flex;align-items:center;gap:12px;margin-top:26px}
     .hero-photo{position:relative;aspect-ratio:3/4;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);will-change:transform}
     .hero-photo img{width:100%;height:100%;object-fit:cover;display:block}
-    .hero-tag{position:absolute;left:20px;top:20px;background:var(--ink);color:var(--cream);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;padding:8px 14px;border-radius:18px}
+    .hero-tag{position:absolute;left:20px;top:20px;background:var(--ink);color:var(--cream);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;padding:8px 14px;border-radius:30px}
 
     .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:60px;font-weight:700;font-size:.95rem;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
     .btn-dark{background:var(--ink);color:var(--cream)}
@@ -165,7 +158,6 @@
     .feature p{color:rgba(246,241,231,.7);margin:18px 0 26px;max-width:42ch}
     .feature .media{position:relative;min-height:360px}
     .feature .media img{width:100%;height:100%;object-fit:cover;display:block;border-radius:0}
-    .feature .media .ph::after{color:rgba(246,241,231,.5)}
 
     /* STEPS */
     .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
@@ -189,7 +181,7 @@
     footer ul{list-style:none;display:grid;gap:10px}
     footer a{color:rgba(246,241,231,.85);font-size:.95rem;transition:color .3s}
     footer a:hover{color:var(--coral)}
-    .foot-bottom{border-top:1px solid rgba(246,241,231,.15);margin-top:50px;padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:.85rem;color:rgba(246,241,231,.8)}
+    .foot-bottom{border-top:1px solid rgba(246,241,231,.15);margin-top:50px;padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:.85rem;color:rgba(246,241,231,.7)}
 
     /* DRAWER / MODAL */
     .overlay{position:fixed;inset:0;background:rgba(23,18,12,.5);backdrop-filter:blur(4px);z-index:90;opacity:0;pointer-events:none;transition:opacity .4s var(--ease)}
@@ -306,9 +298,8 @@
         </div>
       </div>
       <div class="hero-photo reveal" data-parallax="-0.08">
-        <span class="hero-tag">Nuova collezione ’26</span>
-        <!-- IMMAGINE HERO: verrà generata dinamicamente via JS -->
-        <div id="heroImage" class="ph" aria-hidden="true" style="height:100%;min-height:420px;border-radius:inherit;overflow:hidden;background-color:var(--cream-2)"></div>
+        <span class="hero-tag">Nuova collezione '26</span>
+        <img src="Borsabianca.jpeg" alt="Hero - Borsa Bianca" style="width:100%;height:100%;object-fit:cover">
       </div>
     </div>
   </section>
@@ -341,7 +332,7 @@
         <div class="chapter reveal">
           <div class="num">03<span class="dot" style="background:var(--lime)"></span></div>
           <h3>Dalla mano di Milly a casa tua</h3>
-          <p>Confermiamo l’ordine, realizziamo la borsa e la spediamo tracciata. Tu segui ogni passo.</p>
+          <p>Confermiamo l'ordine, realizziamo la borsa e la spediamo tracciata. Tu segui ogni passo.</p>
         </div>
       </div>
     </div>
@@ -378,11 +369,11 @@
         <div class="txt">
           <p class="eyebrow" style="color:var(--coral)">Personalizzazione</p>
           <h2 class="serif">La rendi<br/>davvero tua.</h2>
-          <p>Incisione delle iniziali, colore della fodera, tipo di tracolla. Scrivi le tue richieste nelle note dell’ordine: Milly le realizza a mano.</p>
+          <p>Incisione delle iniziali, colore della fodera, tipo di tracolla. Scrivi le tue richieste nelle note dell'ordine: Milly le realizza a mano.</p>
           <a href="#collezione" class="btn btn-coral" data-testid="feature-cta">Inizia a personalizzare</a>
         </div>
         <div class="media">
-          <div id="atelierImage" class="ph" style="min-height:360px;background-color:#221a12"></div>
+          <img src="accessorifiori.jpeg" alt="Atelier - Dettagli accessori" style="width:100%;height:100%;object-fit:cover">
         </div>
       </div>
     </div>
@@ -392,7 +383,7 @@
   <section id="come-funziona">
     <div class="wrap">
       <div class="sec-head">
-        <h2 class="serif reveal">Dall’ordine<br/>alla tua porta</h2>
+        <h2 class="serif reveal">Dall'ordine<br/>alla tua porta</h2>
         <p class="eyebrow reveal" style="color:var(--ink-soft)">4 passaggi</p>
       </div>
       <div class="steps">
@@ -438,9 +429,9 @@
   </footer>
 
   <!-- SEARCH PANEL -->
-  <div class="search-panel" id="searchPanel" style="position:fixed;top:0;left:0;right:0;z-index:95;background:var(--cream);transform:translateY(-100%);transition:transform .35s var(--ease);padding:100px clamp(16px,4vw,48px) 40px;">
+  <div class="search-panel" id="searchPanel" style="position:fixed;top:0;left:0;right:0;z-index:95;background:var(--cream);transform:translateY(-100%);transition:transform .35s var(--ease);padding:100px 0 40px">
     <div class="wrap">
-      <input type="text" id="searchInput" placeholder="Cerca una borsa…" data-testid="search-input" style="width:100%;font-family:'Fraunces',serif;font-size:clamp(1.6rem,4vw,2.2rem);border:none;background:transparent;border-bottom:2px solid var(--ink);padding:10px 0" />
+      <input type="text" id="searchInput" placeholder="Cerca una borsa…" data-testid="search-input" style="width:100%;font-family:'Fraunces',serif;font-size:clamp(1.6rem,4vw,2.2rem);border:none;background:transparent;outline:none">
       <div class="search-res" id="searchRes" style="margin-top:24px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px"></div>
     </div>
   </div>
@@ -479,7 +470,7 @@
   <div class="modal" id="checkoutModal">
     <div class="modal-card">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px 0">
-        <h2 class="serif" style="font-size:1.8rem">Completa l’ordine</h2>
+        <h2 class="serif" style="font-size:1.8rem">Completa l'ordine</h2>
         <button class="close-x" data-close>✕</button>
       </div>
       <div class="checkout" id="checkoutContent"></div>
@@ -493,7 +484,7 @@
     </div>
   </div>
 
-  <div class="toast" id="toast" style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(30px);background:var(--ink);color:var(--cream);padding:14px 22px;border-radius:40px;z-index:120;opacity:0;transition:all .3s"></div>
+  <div class="toast" id="toast" style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(30px);background:var(--ink);color:var(--cream);padding:14px 22px;border-radius:40px;z-index:200;opacity:0;transition:opacity .4s,transform .4s;pointer-events:none"></div>
 
   <!-- CDN (opzionale per animazioni) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -502,21 +493,21 @@
 
   <script>
   /* ================================================================
-     DATA: prodotti (modifica qui per cambiare catalogo)
+     DATA: prodotti (con immagini reali da repository)
   ================================================================= */
   const PRODOTTI = [
-    { id:1,  name:"Aurora Tote",      cat:"Tote",     price:420, tag:"Bestseller", rating:4.9, colors:["#C46A3F","#17120C","#E7398F"], desc:"Tote spaziosa in pelle pieno fiore, perfetta per ogni giorno." },
-    { id:2,  name:"Lumen Clutch",     cat:"Clutch",   price:260, tag:"Nuovo",      rating:4.7, colors:["#D99A34","#2A46EF","#F6F1E7"], desc:"Pochette da sera elegante con chiusura magnetica." },
-    { id:3,  name:"Sole Crossbody",   cat:"Tracolla", price:340, tag:"",           rating:4.8, colors:["#FF5B39","#6C4CF1","#17120C"], desc:"Tracolla compatta a mani libere, tracolla regolabile." },
-    { id:4,  name:"Notte Baguette",   cat:"Baguette", price:300, tag:"",           rating:4.6, colors:["#17120C","#9FD62B","#C46A3F"], desc:"La baguette iconica, silhouette sotto-braccio." },
-    { id:5,  name:"Duna Hobo",        cat:"Hobo",     price:380, tag:"",           rating:4.8, colors:["#C46A3F","#D99A34","#2A46EF"], desc:"Hobo morbida dalla linea fluida, pelle trattata a mano." },
-    { id:6,  name:"Vela Shopper",     cat:"Tote",     price:450, tag:"Premium",    rating:5.0, colors:["#17120C","#F6F1E7","#FF5B39"], desc:"Shopper strutturata di grande formato, manici rinforzati." },
-    { id:7,  name:"Perla Mini",       cat:"Mini",     price:220, tag:"Nuovo",      rating:4.5, colors:["#E7398F","#F6F1E7","#6C4CF1"], desc:"Micro bag gioiello, giusto lo spazio per l’essenziale." },
-    { id:8,  name:"Onda Bucket",      cat:"Bucket",   price:360, tag:"",           rating:4.7, colors:["#9FD62B","#17120C","#D99A34"], desc:"Secchiello con coulisse in pelle intrecciata." },
-    { id:9,  name:"Fiamma Shoulder",  cat:"Tracolla", price:390, tag:"",           rating:4.9, colors:["#FF5B39","#17120C","#2A46EF"], desc:"Borsa a spalla dalla linea decisa, hardware a contrasto." },
-    { id:10, name:"Muse Satchel",     cat:"Satchel",  price:410, tag:"Bestseller", rating:4.8, colors:["#C46A3F","#6C4CF1","#F6F1E7"], desc:"Satchel classica con doppio manico e tracolla." },
-    { id:11, name:"Iris Pochette",    cat:"Clutch",   price:190, tag:"",           rating:4.4, colors:["#6C4CF1","#E7398F","#D99A34"], desc:"Pochette essenziale dal formato tascabile." },
-    { id:12, name:"Regina Weekender", cat:"Weekender",price:520, tag:"Premium",    rating:5.0, colors:["#17120C","#C46A3F","#2A46EF"], desc:"Borsone da viaggio in pelle e canvas, capiente e resistente." }
+    { id:1,  name:"Aurora Tote",      cat:"Tote",     price:420, tag:"Bestseller", rating:4.9, img:"Borsabianca.jpeg", desc:"Tote spaziosa in pelle pieno fiore, perfetta per ogni giorno." },
+    { id:2,  name:"Lumen Clutch",     cat:"Clutch",   price:260, tag:"Nuovo",      rating:4.7, img:"borsafucsia.jpeg", desc:"Pochette da sera elegante con chiusura magnetica." },
+    { id:3,  name:"Sole Crossbody",   cat:"Tracolla", price:340, tag:"",           rating:4.8, img:"borsaciano.jpeg", desc:"Tracolla compatta a mani libere, tracolla regolabile." },
+    { id:4,  name:"Notte Baguette",   cat:"Baguette", price:300, tag:"",           rating:4.6, img:"borsarossa.jpeg", desc:"La baguette iconica, silhouette sotto-braccio." },
+    { id:5,  name:"Duna Hobo",        cat:"Hobo",     price:380, tag:"",           rating:4.8, img:"borsamarrone.jpeg", desc:"Hobo morbida dalla linea fluida, pelle trattata a mano." },
+    { id:6,  name:"Vela Shopper",     cat:"Tote",     price:450, tag:"Premium",    rating:5.0, img:"Borsablu.jpeg", desc:"Shopper strutturata di grande formato, manici rinforzati." },
+    { id:7,  name:"Perla Mini",       cat:"Mini",     price:220, tag:"Nuovo",      rating:4.5, img:"borsalilla.jpeg", desc:"Micro bag gioiello, giusto lo spazio per l'essenziale." },
+    { id:8,  name:"Onda Bucket",      cat:"Bucket",   price:360, tag:"",           rating:4.7, img:"Orso1.jpeg", desc:"Secchiello con coulisse in pelle intrecciata." },
+    { id:9,  name:"Fiamma Shoulder",  cat:"Tracolla", price:390, tag:"",           rating:4.9, img:"Orsetto2.jpeg", desc:"Borsa a spalla dalla linea decisa, hardware a contrasto." },
+    { id:10, name:"Muse Satchel",     cat:"Satchel",  price:410, tag:"Bestseller", rating:4.8, img:"orsetto2.jpeg", desc:"Satchel classica con doppio manico e tracolla." },
+    { id:11, name:"Iris Pochette",    cat:"Clutch",   price:190, tag:"",           rating:4.4, img:"dinosauroazzurro.jpeg", desc:"Pochette essenziale dal formato tascabile." },
+    { id:12, name:"Regina Weekender", cat:"Weekender",price:520, tag:"Premium",    rating:5.0, img:"accessorifiori.jpeg", desc:"Borsone da viaggio in pelle e canvas, capiente e resistente." }
   ];
 
   /* ===================== Stato (localStorage) ===================== */
@@ -528,7 +519,7 @@
   let discount = 0;
 
   const saveCart = () => { localStorage.setItem('milly_cart', JSON.stringify(cart)); renderCart(); updateBadges(); };
-  const saveWish = () => { localStorage.setItem('milly_wish', JSON.stringify(wish)); renderWish(); updateBadges(); renderCards(); };
+  const saveWish = () => { localStorage.setItem('milly_wish', JSON.stringify(wish)); renderWish(); renderCards(); };
 
   /* ===================== Helpers DOM ===================== */
   const $ = s => document.querySelector(s);
@@ -585,30 +576,15 @@
 
   function starStr(r){ const full=Math.round(r); return "★".repeat(full)+"☆".repeat(5-full); }
 
-  // Crea un data-uri SVG come "immagine segnaposto" (colore + etichetta)
-  function svgDataUrl(label, color = '#d6d6d6', w=800, h=1000){
-    const bg = (color || '#d6d6d6').replace('#','%23');
-    const escapedLabel = label.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}' viewBox='0 0 ${w} ${h}'>
-      <rect width='100%' height='100%' fill='${bg}' opacity='0.18'/>
-      <g font-family='Manrope, sans-serif'>
-        <text x='50%' y='50%' text-anchor='middle' fill='%2317120C' font-size='28' font-weight='700'>${escapedLabel}</text>
-      </g>
-    </svg>`;
-    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
-  }
-
   function renderCards(){
     const grid = $('#grid');
     const list = getVisible();
     grid.innerHTML = list.map(p=>{
-      const bgColor = (p.colors && p.colors[0]) ? p.colors[0] : '#ddd';
-      const imgSrc = svgDataUrl(p.name, bgColor, 800, 1000);
       return `
       <article class="card reveal" data-testid="product-card-${p.id}">
         <div class="card-media">
-          <img src="${imgSrc}" alt="${p.name}">
-          ${p.tag?`<span class="card-tag" style="color:${p.colors[0]};background:rgba(255,255,255,0.95)">${p.tag}</span>`:''}
+          <img src="${p.img}" alt="${p.name}">
+          ${p.tag?`<span class="card-tag" style="background:rgba(255,255,255,0.95);color:#17120C">${p.tag}</span>`:''}
           <button class="wish ${wish.includes(p.id)?'on':''}" data-wish="${p.id}" data-testid="wish-btn-${p.id}" aria-label="Preferiti">
             <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C1 9 2.5 5.5 6 5.5c2 0 3.2 1.2 4 2.3.8-1.1 2-2.3 4-2.3 3.5 0 5 3.5 3.5 6.5C19 16.5 12 21 12 21z"/></svg>
           </button>
@@ -621,7 +597,6 @@
           <div class="card-foot">
             <div>
               <div class="price">${money(p.price)}</div>
-              <div class="swatches">${p.colors.map(c=>`<span class="sw" style="background:${c}"></span>`).join('')}</div>
             </div>
             <button class="add-mini" data-add="${p.id}" data-testid="add-cart-btn-${p.id}" aria-label="Aggiungi al carrello">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
@@ -635,18 +610,16 @@
     grid.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>addToCart(+b.dataset.add)));
     grid.querySelectorAll('[data-wish]').forEach(b=>b.addEventListener('click',()=>toggleWish(+b.dataset.wish)));
     grid.querySelectorAll('[data-quick]').forEach(b=>b.addEventListener('click',()=>openQuickView(+b.dataset.quick)));
-    // reveal animation se GSAP disponibile
     if(window.gsap && window.ScrollTrigger) revealInit();
   }
 
   /* ===================== CART ===================== */
-  function addToCart(id, color){
+  function addToCart(id){
     const p = PRODOTTI.find(x=>x.id===id);
     if(!p) return;
-    color = color || p.colors[0];
-    const line = cart.find(c=>c.id===id && c.color===color);
+    const line = cart.find(c=>c.id===id);
     if(line) line.qty++;
-    else cart.push({id, color, qty:1});
+    else cart.push({id, qty:1});
     saveCart();
     toast(`${p.name} aggiunta al carrello`);
   }
@@ -659,13 +632,12 @@
     if(!cart.length){ body.innerHTML='<div class="empty">Il carrello è vuoto.<br/>Aggiungi la tua prima borsa ✦</div>'; foot.innerHTML=''; return; }
     body.innerHTML = cart.map((c,i)=>{
       const p=PRODOTTI.find(x=>x.id===c.id);
-      const thumb = svgDataUrl(p ? p.name : 'Prodotto', c.color, 200, 240);
       return `
       <div class="citem">
-        <div class="thumb"><img src="${thumb}" alt="${p ? p.name : ''}" style="width:76px;height:90px;object-fit:cover;border-radius:10px"></div>
+        <div class="thumb"><img src="${p ? p.img : ''}" alt="${p ? p.name : ''}" style="width:76px;height:90px;object-fit:cover;border-radius:10px"></div>
         <div>
           <h4>${p ? p.name : ''}</h4>
-          <div class="meta">${p ? p.cat : ''} · <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${c.color};vertical-align:middle;border:1px solid rgba(0,0,0,.2)"></span></div>
+          <div class="meta">${p ? p.cat : ''}</div>
           <div class="qty"><button data-dec="${i}">−</button><span data-testid="cart-qty-${p.id}">${c.qty}</span><button data-inc="${i}">+</button></div>
           <div class="rm" data-rm="${i}" data-testid="cart-remove-${p.id}">Rimuovi</div>
         </div>
@@ -684,7 +656,7 @@
       ${discount?`<div class="rowline" style="color:var(--coral)"><span>Sconto (${discount*100}%)</span><span>−${money(discAmount)}</span></div>`:''}
       <div class="rowline"><span>Spedizione</span><span>Calcolata al checkout</span></div>
       <div class="rowline total"><span>Totale</span><span data-testid="cart-total">${money(sub - discAmount)}</span></div>
-      <button class="btn btn-coral" style="width:100%;justify-content:center;margin-top:14px" id="checkoutBtn" data-testid="checkout-btn">Procedi all’ordine</button>
+      <button class="btn btn-coral" style="width:100%;justify-content:center;margin-top:14px" id="checkoutBtn" data-testid="checkout-btn">Procedi all'ordine</button>
     `;
 
     body.querySelectorAll('[data-inc]').forEach(b=>b.addEventListener('click',()=>changeQty(+b.dataset.inc,1)));
@@ -713,10 +685,10 @@
     const body = $('#wishBody');
     if(!wish.length){ body.innerHTML = '<div class="empty">Nessun preferito ancora.<br/>Tocca il cuore sulle borse che ami ♥</div>'; return; }
     body.innerHTML = wish.map(id=>{
-      const p = PRODOTTI.find(x=>x.id===id); const thumb = svgDataUrl(p.name, p.colors[0], 200, 240);
+      const p = PRODOTTI.find(x=>x.id===id);
       return `
       <div class="citem">
-        <div class="thumb"><img src="${thumb}" alt="${p.name}" style="width:76px;height:90px;object-fit:cover;border-radius:10px"></div>
+        <div class="thumb"><img src="${p.img}" alt="${p.name}" style="width:76px;height:90px;object-fit:cover;border-radius:10px"></div>
         <div><h4>${p.name}</h4><div class="meta">${p.cat}</div>
           <div class="price" style="font-size:1rem;margin-top:6px">${money(p.price)}</div>
           <button class="btn btn-dark" style="padding:8px 16px;font-size:.82rem;margin-top:8px" data-add-from-wish="${p.id}">Aggiungi</button>
@@ -729,35 +701,22 @@
   }
 
   /* ===================== QUICK VIEW ===================== */
-  let qvSelColor = null;
   function openQuickView(id){
     const p = PRODOTTI.find(x=>x.id===id); if(!p) return;
-    qvSelColor = p.colors[0];
-    const img = svgDataUrl(p.name, p.colors[0], 800, 1000);
     $('#qvContent').innerHTML = `
-      <div class="media"><img src="${img}" alt="${p.name}"></div>
+      <div class="media"><img src="${p.img}" alt="${p.name}"></div>
       <div class="info">
         <div class="cat" style="letter-spacing:.16em;text-transform:uppercase;font-size:.72rem;font-weight:700;color:var(--ink-soft)">${p.cat}</div>
         <h2>${p.name}</h2>
         <div class="rate"><span class="stars" style="color:var(--gold)">${starStr(p.rating)}</span> ${p.rating.toFixed(1)} · fatta a mano su ordinazione</div>
         <div class="price" style="font-size:1.6rem;margin-top:10px">${money(p.price)}</div>
         <p class="desc">${p.desc}</p>
-        <div style="font-size:.8rem;font-weight:700;letter-spacing:.04em">COLORE</div>
-        <div class="swatch-row" id="qvSwatches">${p.colors.map((c,i)=>`<span class="sw ${i===0?'sel':''}" style="background:${c}" data-c="${c}"></span>`).join('')}</div>
         <button class="btn btn-coral" style="width:100%;justify-content:center;margin-top:12px" id="qvAddBtn">Aggiungi al carrello</button>
         <p style="font-size:.82rem;color:var(--ink-soft);margin-top:14px">✦ Realizzazione 7–14 giorni · Spedizione tracciata · Reso 14 giorni</p>
       </div>
     `;
-    // swatches
-    document.querySelectorAll('#qvSwatches .sw').forEach(s=>{
-      s.addEventListener('click',()=>{
-        qvSelColor = s.dataset.c;
-        document.querySelectorAll('#qvSwatches .sw').forEach(x=>x.classList.remove('sel'));
-        s.classList.add('sel');
-      });
-    });
     document.getElementById('qvAddBtn').addEventListener('click',()=>{
-      addToCart(p.id, qvSelColor); closeAll(); openCart();
+      addToCart(p.id); closeAll(); openCart();
     });
     openEl($('#qvModal'));
   }
@@ -769,7 +728,7 @@
     $('#checkoutContent').innerHTML = `
       <form id="checkoutForm">
         <p class="eyebrow" style="color:var(--coral);margin-bottom:12px">Dati del cliente</p>
-        <div class="form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:20px">
           <div class="field"><label>Nome *</label><input required name="nome" data-testid="co-nome"/></div>
           <div class="field"><label>Cognome *</label><input required name="cognome" data-testid="co-cognome"/></div>
           <div class="field"><label>Email *</label><input required type="email" name="email" data-testid="co-email"/></div>
@@ -784,24 +743,23 @@
           <div class="field full"><label>Note per Milly (personalizzazione, iniziali, richieste)</label><textarea rows="3" name="note" placeholder="Es. iniziali M.R. incise, fodera rossa…" data-testid="co-note"></textarea></div>
         </div>
 
-        <p class="eyebrow" style="color:var(--coral);margin:22px 0 8px">Spedizione</p>
-        <div class="ship-opt" style="display:flex;gap:12px;margin-top:6px">
-          <label style="flex:1;min-width:180px;border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;gap:10px;cursor:pointer;background:#fff"><input type="radio" name="ship" value="Standard (gratis) · 3-5 gg" checked/> <span><strong>Standard</strong><br/><small>Gratis · 3-5 gg</small></span></label>
-          <label style="flex:1;min-width:180px;border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;gap:10px;cursor:pointer;background:#fff"><input type="radio" name="ship" value="Express · €12 · 24-48h"/> <span><strong>Express</strong><br/><small>€12 · 24-48h</small></span></label>
+        <p class="eyebrow" style="color:var(--coral);margin:22px 0 8px;padding-left:20px">Spedizione</p>
+        <div class="ship-opt" style="display:flex;gap:12px;margin-top:6px;padding:0 20px">
+          <label style="flex:1;min-width:180px;border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;gap:10px;cursor:pointer;background:#fff"><input type="radio" name="ship" value="Standard (7-10 giorni)" checked data-testid="ship-standard"/><span><strong>Standard</strong><br/><small>7-10 giorni</small></span></label>
+          <label style="flex:1;min-width:180px;border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;gap:10px;cursor:pointer;background:#fff"><input type="radio" name="ship" value="Express (2-3 giorni)" data-testid="ship-express"/><span><strong>Express</strong><br/><small>2-3 giorni</small></span></label>
         </div>
 
-        <div class="summary" style="background:#fff;border-radius:16px;padding:18px;margin:16px 0">
+        <div class="summary" style="background:#fff;border-radius:16px;padding:18px;margin:16px 20px">
           <p class="eyebrow" style="margin-bottom:10px">Riepilogo ordine</p>
           ${cart.map(c=>{const p=PRODOTTI.find(x=>x.id===c.id);return `<div class="rowline"><span>${p.name} ×${c.qty}</span><span>${money(p.price*c.qty)}</span></div>`;}).join('')}
           ${discount?`<div class="rowline" style="color:var(--coral)"><span>Sconto</span><span>−${money(disc)}</span></div>`:''}
           <div class="rowline total"><span>Totale</span><span>${money(sub-disc)}</span></div>
         </div>
 
-        <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:14px">Preview: nessun pagamento reale. L’ordine verrà "inviato" a Milly per conferma e realizzazione a mano.</p>
-        <button class="btn btn-coral" type="submit" style="width:100%;justify-content:center" data-testid="place-order-btn">Invia ordine a Milly</button>
+        <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:14px;padding:0 20px">Preview: nessun pagamento reale. L'ordine verrà "inviato" a Milly per conferma e realizzazione a mano.</p>
+        <div style="padding:0 20px 20px"><button class="btn btn-coral" type="submit" style="width:100%;justify-content:center" data-testid="place-order-btn">Invia ordine a Milly</button></div>
       </form>
     `;
-    // form submit
     const form = document.getElementById('checkoutForm');
     form.addEventListener('submit', placeOrder);
     closeAll(); openEl($('#checkoutModal'));
@@ -838,9 +796,8 @@
     const res = PRODOTTI.filter(p=>p.name.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q));
     const list = (q ? res : PRODOTTI).slice(0,8);
     $('#searchRes').innerHTML = list.map(p=>{
-      const thumb = svgDataUrl(p.name, p.colors[0], 400, 500);
       return `<div class="sres" data-sq="${p.id}" style="cursor:pointer;padding:8px;border-radius:10px;background:#fff">
-        <div class="thumb" style="margin-bottom:8px"><img src="${thumb}" alt="${p.name}" style="width:100%;height:160px;object-fit:cover;border-radius:8px"></div>
+        <div class="thumb" style="margin-bottom:8px"><img src="${p.img}" alt="${p.name}" style="width:100%;height:160px;object-fit:cover;border-radius:8px"></div>
         <div style="font-weight:700;font-size:.9rem">${p.name}</div>
         <div style="font-size:.82rem;color:var(--ink-soft)">${money(p.price)}</div>
       </div>`;
@@ -866,10 +823,8 @@
   });
   $('#searchInput').addEventListener('input', e=>renderSearch(e.target.value));
   $('#sortSelect').addEventListener('change', e=>{ activeSort = e.target.value; renderCards(); });
-  // burger behavior small screens
   $('#burger').addEventListener('click', ()=>{ const nav = document.querySelector('.nav-links'); if(nav) nav.style.display = nav.style.display === 'flex' ? 'none' : 'flex'; });
 
-  // navbar scrolled
   window.addEventListener('scroll', ()=>{ $('#nav').classList.toggle('scrolled', window.scrollY > 40); });
 
   /* ===================== ANIMATIONS (GSAP/Lenis) ===================== */
@@ -897,47 +852,19 @@
         gsap.to(el,{yPercent:s*100,ease:"none",scrollTrigger:{trigger:el,start:"top bottom",end:"bottom top",scrub:true}});
       });
     } else {
-      // fallback: mostra tutto
       document.querySelectorAll('.reveal').forEach(e=>{ e.style.opacity = 1; e.style.transform = 'none'; });
       document.querySelectorAll('#heroTitle .line i').forEach(e=>e.style.transform = 'none');
     }
   }
 
   /* ===================== INIT / START ===================== */
-  // generazione immagini hero & atelier (inline)
-  function initHeroImages(){
-    const hero = $('#heroImage');
-    if(hero){
-      const img = document.createElement('img');
-      img.src = svgDataUrl('Hero · Borsa Milly', '#C46A3F', 1000, 1400);
-      img.alt = 'Hero Milly';
-      img.style.width = '100%';
-      img.style.height = '100%';
-      img.style.objectFit = 'cover';
-      hero.innerHTML = ''; hero.appendChild(img);
-    }
-    const atelier = $('#atelierImage');
-    if(atelier){
-      const img = document.createElement('img');
-      img.src = svgDataUrl('Atelier · Dettaglio', '#221a12', 1200, 700);
-      img.alt = 'Atelier Milly';
-      img.style.width = '100%';
-      img.style.height = '100%';
-      img.style.objectFit = 'cover';
-      atelier.innerHTML = ''; atelier.appendChild(img);
-    }
-  }
-
-  // inizializzazione componenti
   renderFilters();
   renderCards();
   renderCart();
   renderWish();
   updateBadges();
-  initHeroImages();
   window.addEventListener('load', initAnim);
 
-  // fallback per animazioni se le CDN tardano
   setTimeout(()=>{
     if(!window.gsap){ document.querySelectorAll('.reveal').forEach(e=>e.style.opacity = 1); document.querySelectorAll('#heroTitle .line i').forEach(e=>e.style.transform = 'none'); }
   }, 1200);
