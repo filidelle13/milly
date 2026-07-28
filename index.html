@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  MILLY — Preview sito e-commerce borse artigianali (FILE HTML STATICO UNICO)
+  ----------------------------------------------------------------------------
+  • Nessun backend: carrello, wishlist e ordine sono simulati (salvati nel
+    localStorage del browser). È una PREVIEW da cui partirai per il sito vero.
+  • Tutte le IMMAGINI sono dei segnaposto: cerca i commenti "IMMAGINE:" per
+    sapere esattamente dove incollare le tue foto.
+  • Tutti gli ARTICOLI sono nell'array JS "PRODOTTI" (vedi commento "ARTICOLI"):
+    lì cambi nome, prezzo, categoria, colori e descrizione a piacere.
+  • Font: Fraunces (titoli) + Manrope (testo). Animazioni: GSAP + Lenis (CDN).
+  ============================================================================
+-->
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Milly — Borse artigianali</title>
+  <meta name="description" content="Milly — borse artigianali fatte a mano su ordinazione. Tote, clutch, tracolle e altro." />
+
+  <!-- Font Google: Fraunces (display elegante) + Manrope (testo pulito) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Manrope:wght@300..800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ====================== PALETTE & VARIABILI GLOBALI ==================== */
+    :root{
+      --cream:#F6F1E7;      /* sfondo caldo */
+      --cream-2:#EFE7D8;
+      --ink:#17120C;        /* testo scuro */
+      --ink-soft:#4A4038;
+      --coral:#FF5B39;      /* accenti colorati (moderno + elegante) */
+      --cobalt:#2A46EF;
+      --fuchsia:#E7398F;
+      --lime:#9FD62B;
+      --violet:#6C4CF1;
+      --gold:#D99A34;
+      --line:rgba(23,18,12,.14);
+      --radius:22px;
+      --shadow:0 30px 60px -30px rgba(23,18,12,.45);
+      --ease:cubic-bezier(.16,1,.3,1);
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    html{-webkit-font-smoothing:antialiased}
+    body{
+      font-family:'Manrope',sans-serif;
+      background:var(--cream);
+      color:var(--ink);
+      overflow-x:hidden;
+      line-height:1.5;
+    }
+    /* Lenis smooth scroll (quando attivo) */
+    html.lenis,html.lenis body{height:auto}
+    .lenis.lenis-smooth{scroll-behavior:auto!important}
+
+    ::selection{background:var(--coral);color:#fff}
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%}
+    button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+
+    .wrap{width:min(1280px,92vw);margin-inline:auto}
+    .serif{font-family:'Fraunces',serif}
+    .eyebrow{font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;font-weight:700}
+
+    /* Placeholder immagini: sfondo tratteggiato + etichetta.
+       Sostituisci il .ph con <img> reale quando avrai le foto. */
+    .ph{
+      position:relative;width:100%;height:100%;
+      background:
+        repeating-linear-gradient(45deg, rgba(23,18,12,.05) 0 10px, rgba(23,18,12,.02) 10px 20px);
+      display:flex;align-items:center;justify-content:center;overflow:hidden;
+    }
+    .ph::after{
+      content:attr(data-label);
+      font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;
+      color:var(--ink-soft);opacity:.55;padding:0 12px;text-align:center;
+    }
+    .ph.tint{mix-blend-mode:normal}
+
+    /* ============================ NAVBAR ================================= */
+    header.nav{
+      position:fixed;top:0;left:0;right:0;z-index:80;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:18px clamp(16px,4vw,48px);
+      transition:background .5s var(--ease),box-shadow .5s var(--ease),padding .5s var(--ease);
+    }
+    header.nav.scrolled{background:rgba(246,241,231,.82);backdrop-filter:blur(16px);box-shadow:0 1px 0 var(--line);padding-block:12px}
+    .brand{font-family:'Fraunces',serif;font-weight:600;font-size:1.7rem;letter-spacing:.02em;line-height:1}
+    .brand span{color:var(--coral)}
+    .nav-links{display:flex;gap:30px;align-items:center}
+    .nav-links a{font-size:.9rem;font-weight:600;position:relative;padding:4px 0}
+    .nav-links a::after{content:"";position:absolute;left:0;bottom:-2px;height:2px;width:0;background:var(--coral);transition:width .35s var(--ease)}
+    .nav-links a:hover::after{width:100%}
+    .nav-actions{display:flex;align-items:center;gap:14px}
+    .icon-btn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);transition:transform .3s var(--ease),background .3s,color .3s;position:relative}
+    .icon-btn:hover{transform:translateY(-2px);background:var(--ink);color:var(--cream)}
+    .icon-btn svg{width:19px;height:19px}
+    .badge{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;padding:0 5px;border-radius:20px;background:var(--coral);color:#fff;font-size:.68rem;font-weight:800;display:grid;place-items:center}
+    .burger{display:none}
+
+    /* ============================ HERO ================================== */
+    .hero{position:relative;min-height:100vh;display:flex;align-items:flex-end;padding-bottom:6vh;overflow:hidden}
+    .hero-bg{position:absolute;inset:0;z-index:0}
+    .hero-blob{position:absolute;border-radius:50%;filter:blur(40px);opacity:.55}
+    .b1{width:46vw;height:46vw;background:var(--coral);top:-12vw;right:-8vw}
+    .b2{width:34vw;height:34vw;background:var(--violet);bottom:-10vw;left:-8vw}
+    .b3{width:24vw;height:24vw;background:var(--lime);top:30%;left:40%}
+    .hero-inner{position:relative;z-index:2;width:100%;display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:end}
+    .hero h1{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(3.4rem,11vw,10rem);line-height:.92;letter-spacing:-.02em}
+    .hero h1 .line{overflow:hidden;display:block}
+    .hero h1 .line i{display:block;font-style:normal}
+    .hero h1 em{font-style:italic;color:var(--coral)}
+    .hero-sub{max-width:34ch;font-size:1.05rem;color:var(--ink-soft);margin-top:22px}
+    .hero-cta{display:inline-flex;align-items:center;gap:12px;margin-top:26px}
+    .hero-photo{position:relative;aspect-ratio:3/4;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);will-change:transform}
+    .hero-photo .ph{background-color:var(--cream-2)}
+    .hero-tag{position:absolute;left:20px;top:20px;background:var(--ink);color:var(--cream);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;padding:8px 14px;border-radius:40px}
+
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:15px 26px;border-radius:60px;font-weight:700;font-size:.95rem;transition:transform .3s var(--ease),box-shadow .3s var(--ease),background .3s}
+    .btn-dark{background:var(--ink);color:var(--cream)}
+    .btn-dark:hover{transform:translateY(-3px);box-shadow:0 16px 30px -12px rgba(23,18,12,.5)}
+    .btn-ghost{border:1px solid var(--ink)}
+    .btn-ghost:hover{background:var(--ink);color:var(--cream)}
+    .btn-coral{background:var(--coral);color:#fff}
+    .btn-coral:hover{transform:translateY(-3px);box-shadow:0 16px 30px -12px rgba(255,91,57,.6)}
+
+    /* ============================ MARQUEE =============================== */
+    .marquee{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;overflow:hidden;white-space:nowrap;background:var(--ink);color:var(--cream)}
+    .marquee-track{display:inline-flex;gap:44px;will-change:transform;animation:scrollx 26s linear infinite}
+    .marquee span{font-family:'Fraunces',serif;font-size:1.6rem;font-style:italic;display:inline-flex;align-items:center;gap:44px}
+    .marquee span::after{content:"✦";color:var(--coral);font-style:normal}
+    @keyframes scrollx{to{transform:translateX(-50%)}}
+
+    /* ============================ MANIFESTO ============================= */
+    section{padding:clamp(70px,10vw,140px) 0}
+    .sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:56px;flex-wrap:wrap}
+    .sec-head h2{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(2.2rem,5vw,4rem);line-height:1;letter-spacing:-.01em;max-width:16ch}
+    .chapters{display:grid;grid-template-columns:repeat(3,1fr);gap:30px}
+    .chapter{border-top:2px solid var(--ink);padding-top:22px}
+    .chapter .num{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:600}
+    .chapter h3{font-size:1.15rem;font-weight:800;margin:8px 0 10px}
+    .chapter p{color:var(--ink-soft);font-size:.98rem}
+    .chapter .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-left:8px}
+
+    /* ============================ CATEGORIE / FILTRI ==================== */
+    .filters{display:flex;gap:10px;flex-wrap:wrap}
+    .chip{padding:11px 20px;border-radius:40px;border:1px solid var(--ink);font-weight:700;font-size:.88rem;transition:all .3s var(--ease)}
+    .chip.active,.chip:hover{background:var(--ink);color:var(--cream)}
+    .toolbar{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:36px}
+    .sort select{padding:11px 18px;border-radius:40px;border:1px solid var(--ink);font-weight:700;font-family:inherit;background:transparent;cursor:pointer}
+
+    /* ============================ GRIGLIA PRODOTTI ===================== */
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px}
+    .card{background:#fff;border-radius:var(--radius);overflow:hidden;box-shadow:0 20px 40px -30px rgba(23,18,12,.4);transition:transform .5s var(--ease),box-shadow .5s var(--ease);will-change:transform}
+    .card:hover{transform:translateY(-8px);box-shadow:var(--shadow)}
+    .card-media{position:relative;aspect-ratio:4/5;overflow:hidden}
+    .card-media .ph{transition:transform .8s var(--ease)}
+    .card:hover .card-media .ph{transform:scale(1.06)}
+    .card-tag{position:absolute;top:14px;left:14px;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;font-weight:800;padding:6px 12px;border-radius:30px;background:#fff}
+    .wish{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.9);display:grid;place-items:center;transition:transform .3s var(--ease)}
+    .wish:hover{transform:scale(1.12)}
+    .wish svg{width:18px;height:18px;fill:none;stroke:var(--ink);stroke-width:2;transition:fill .3s,stroke .3s}
+    .wish.on svg{fill:var(--coral);stroke:var(--coral)}
+    .quick{position:absolute;left:14px;right:14px;bottom:14px;opacity:0;transform:translateY(10px);transition:all .4s var(--ease)}
+    .card:hover .quick{opacity:1;transform:none}
+    .card-body{padding:20px}
+    .card-body .cat{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--ink-soft)}
+    .card-body h3{font-family:'Fraunces',serif;font-size:1.35rem;font-weight:500;margin:6px 0 4px}
+    .rate{display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--ink-soft);margin-bottom:12px}
+    .rate .stars{color:var(--gold);letter-spacing:1px}
+    .card-foot{display:flex;align-items:center;justify-content:space-between}
+    .price{font-weight:800;font-size:1.15rem}
+    .swatches{display:flex;gap:6px;margin-top:2px}
+    .sw{width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(0,0,0,.15)}
+    .add-mini{width:46px;height:46px;border-radius:50%;background:var(--ink);color:var(--cream);display:grid;place-items:center;transition:transform .3s var(--ease),background .3s}
+    .add-mini:hover{transform:rotate(90deg);background:var(--coral)}
+    .add-mini svg{width:20px;height:20px}
+
+    /* ============================ FEATURE BANNER ======================= */
+    .feature{background:var(--ink);color:var(--cream);border-radius:36px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr}
+    .feature .txt{padding:clamp(30px,5vw,70px)}
+    .feature h2{color:var(--cream)}
+    .feature p{color:rgba(246,241,231,.7);margin:18px 0 26px;max-width:42ch}
+    .feature .media{position:relative;min-height:360px}
+    .feature .media .ph{background-color:#221a12}
+    .feature .media .ph::after{color:rgba(246,241,231,.5)}
+
+    /* ============================ STEPS (come funziona) ================ */
+    .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+    .step{padding:26px;border-radius:20px;background:#fff;box-shadow:0 20px 40px -34px rgba(23,18,12,.5)}
+    .step .n{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;margin-bottom:16px}
+    .step h4{font-size:1.05rem;margin-bottom:8px}
+    .step p{font-size:.9rem;color:var(--ink-soft)}
+
+    /* ============================ NEWSLETTER =========================== */
+    .news{background:var(--coral);color:#fff;border-radius:36px;padding:clamp(34px,6vw,72px);text-align:center}
+    .news h2{color:#fff;margin-inline:auto}
+    .news form{display:flex;gap:10px;max-width:520px;margin:26px auto 0;flex-wrap:wrap}
+    .news input{flex:1;min-width:220px;padding:16px 20px;border-radius:60px;border:none;font-family:inherit;font-size:1rem}
+    .news .btn-dark{background:#fff;color:var(--ink)}
+
+    /* ============================ FOOTER =============================== */
+    footer{background:var(--ink);color:var(--cream);padding:80px 0 40px;margin-top:20px}
+    .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:30px}
+    footer .brand{color:var(--cream);font-size:2.4rem}
+    footer h5{font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:16px;color:rgba(246,241,231,.6)}
+    footer ul{list-style:none;display:grid;gap:10px}
+    footer a{color:rgba(246,241,231,.85);font-size:.95rem;transition:color .3s}
+    footer a:hover{color:var(--coral)}
+    .foot-bottom{border-top:1px solid rgba(246,241,231,.15);margin-top:50px;padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:.85rem;color:rgba(246,241,231,.6)}
+
+    /* ============================ DRAWER / MODALI ====================== */
+    .overlay{position:fixed;inset:0;background:rgba(23,18,12,.5);backdrop-filter:blur(4px);z-index:90;opacity:0;pointer-events:none;transition:opacity .4s var(--ease)}
+    .overlay.open{opacity:1;pointer-events:auto}
+
+    .drawer{position:fixed;top:0;right:0;height:100%;width:min(440px,92vw);background:var(--cream);z-index:100;transform:translateX(100%);transition:transform .5s var(--ease);display:flex;flex-direction:column}
+    .drawer.open{transform:none}
+    .drawer-head{display:flex;justify-content:space-between;align-items:center;padding:22px;border-bottom:1px solid var(--line)}
+    .drawer-head h3{font-family:'Fraunces',serif;font-size:1.5rem}
+    .drawer-body{flex:1;overflow-y:auto;padding:18px 22px}
+    .drawer-foot{padding:22px;border-top:1px solid var(--line)}
+    .close-x{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center}
+    .close-x:hover{background:var(--ink);color:var(--cream)}
+
+    .citem{display:grid;grid-template-columns:76px 1fr auto;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+    .citem .thumb{width:76px;height:90px;border-radius:12px;overflow:hidden}
+    .citem h4{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:500}
+    .citem .meta{font-size:.8rem;color:var(--ink-soft)}
+    .qty{display:inline-flex;align-items:center;gap:10px;margin-top:8px;border:1px solid var(--line);border-radius:30px;padding:4px 8px}
+    .qty button{width:24px;height:24px;font-weight:800;font-size:1rem;border-radius:50%}
+    .qty button:hover{background:var(--ink);color:var(--cream)}
+    .citem .rm{font-size:.78rem;color:var(--coral);font-weight:700;margin-top:6px}
+    .empty{text-align:center;color:var(--ink-soft);padding:50px 0}
+
+    .rowline{display:flex;justify-content:space-between;margin:8px 0;font-size:.95rem}
+    .total{font-weight:800;font-size:1.3rem;font-family:'Fraunces',serif}
+    .coupon{display:flex;gap:8px;margin:14px 0}
+    .coupon input{flex:1;padding:12px 16px;border-radius:40px;border:1px solid var(--line);font-family:inherit;background:#fff}
+
+    /* Modal centrale (quick view / checkout / conferma) */
+    .modal{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .4s var(--ease)}
+    .modal.open{opacity:1;pointer-events:auto}
+    .modal-card{background:var(--cream);border-radius:28px;width:min(920px,96vw);max-height:92vh;overflow:auto;box-shadow:var(--shadow);transform:translateY(24px) scale(.98);transition:transform .5s var(--ease)}
+    .modal.open .modal-card{transform:none}
+    .qv{display:grid;grid-template-columns:1fr 1fr}
+    .qv .media{aspect-ratio:4/5}
+    .qv .info{padding:clamp(24px,4vw,44px)}
+    .qv h2{font-family:'Fraunces',serif;font-weight:500;font-size:2.2rem;line-height:1.05;margin:6px 0 10px}
+    .qv .desc{color:var(--ink-soft);margin:14px 0}
+    .swatch-row{display:flex;gap:10px;margin:16px 0}
+    .swatch-row .sw{width:30px;height:30px;cursor:pointer;transition:transform .2s}
+    .swatch-row .sw.sel{outline:2px solid var(--ink);outline-offset:2px}
+    .swatch-row .sw:hover{transform:scale(1.12)}
+
+    /* Checkout form */
+    .checkout{padding:clamp(24px,4vw,44px)}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .field{display:flex;flex-direction:column;gap:6px}
+    .field.full{grid-column:1/-1}
+    .field label{font-size:.78rem;font-weight:700;letter-spacing:.04em}
+    .field input,.field textarea,.field select{padding:13px 16px;border-radius:14px;border:1px solid var(--line);font-family:inherit;font-size:.95rem;background:#fff}
+    .field input:focus,.field textarea:focus,.field select:focus{outline:2px solid var(--coral);border-color:transparent}
+    .ship-opt{display:flex;gap:12px;margin-top:6px;flex-wrap:wrap}
+    .ship-opt label{flex:1;min-width:180px;border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;gap:10px;cursor:pointer;background:#fff}
+    .ship-opt input{accent-color:var(--coral)}
+    .summary{background:#fff;border-radius:16px;padding:18px;margin:16px 0}
+
+    /* Conferma ordine */
+    .confirm{padding:clamp(30px,5vw,60px);text-align:center}
+    .confirm .tick{width:84px;height:84px;border-radius:50%;background:var(--lime);display:grid;place-items:center;margin:0 auto 20px}
+    .confirm h2{font-family:'Fraunces',serif;font-size:2.4rem;margin-bottom:10px}
+    .confirm .ordernum{font-weight:800;color:var(--coral);font-size:1.2rem;letter-spacing:.05em}
+
+    /* Search overlay */
+    .search-panel{position:fixed;top:0;left:0;right:0;z-index:95;background:var(--cream);transform:translateY(-100%);transition:transform .5s var(--ease);padding:100px clamp(16px,4vw,48px) 40px;box-shadow:var(--shadow)}
+    .search-panel.open{transform:none}
+    .search-panel input{width:100%;font-family:'Fraunces',serif;font-size:clamp(1.6rem,4vw,3rem);border:none;background:transparent;border-bottom:2px solid var(--ink);padding:10px 0}
+    .search-panel input:focus{outline:none}
+    .search-res{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:24px}
+    .sres{cursor:pointer}
+    .sres .thumb{aspect-ratio:4/5;border-radius:14px;overflow:hidden;margin-bottom:8px}
+
+    .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(30px);background:var(--ink);color:var(--cream);padding:14px 22px;border-radius:40px;z-index:120;opacity:0;pointer-events:none;transition:all .4s var(--ease);font-weight:700;font-size:.9rem;box-shadow:var(--shadow)}
+    .toast.show{opacity:1;transform:translateX(-50%)}
+
+    /* Animazioni reveal (stato iniziale impostato via JS così senza JS resta visibile) */
+    .reveal{will-change:transform,opacity}
+
+    /* ============================ RESPONSIVE =========================== */
+    @media(max-width:1024px){
+      .hero-inner{grid-template-columns:1fr}
+      .hero-photo{display:none}
+      .chapters{grid-template-columns:1fr}
+      .grid{grid-template-columns:repeat(2,1fr)}
+      .feature{grid-template-columns:1fr}
+      .steps{grid-template-columns:repeat(2,1fr)}
+      .qv{grid-template-columns:1fr}
+      .foot-grid{grid-template-columns:1fr 1fr}
+      .search-res{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:640px){
+      .nav-links{display:none}
+      .burger{display:grid}
+      .grid{grid-template-columns:1fr}
+      .form-grid{grid-template-columns:1fr}
+      .foot-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================ NAVBAR ============================ -->
+  <header class="nav" id="nav">
+    <a href="#top" class="brand" data-testid="brand-logo">Mill<span>y</span></a>
+    <nav class="nav-links">
+      <a href="#collezione">Collezione</a>
+      <a href="#categorie">Categorie</a>
+      <a href="#storia">La nostra storia</a>
+      <a href="#come-funziona">Come funziona</a>
+      <a href="#contatti">Contatti</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="icon-btn" id="openSearch" data-testid="open-search-btn" aria-label="Cerca">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      </button>
+      <button class="icon-btn" id="openWish" data-testid="open-wishlist-btn" aria-label="Preferiti">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9C1 9 2.5 5.5 6 5.5c2 0 3.2 1.2 4 2.3.8-1.1 2-2.3 4-2.3 3.5 0 5 3.5 3.5 6.5C19 16.5 12 21 12 21z"/></svg>
+        <span class="badge" id="wishBadge" style="display:none">0</span>
+      </button>
+      <button class="icon-btn" id="openCart" data-testid="open-cart-btn" aria-label="Carrello">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6 5 3H2"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/></svg>
+        <span class="badge" id="cartBadge" style="display:none">0</span>
+      </button>
+      <button class="icon-btn burger" id="burger" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============================ HERO ============================ -->
+  <span id="top"></span>
+  <section class="hero" id="home">
+    <div class="hero-bg">
+      <!-- Sfondo animato a "blob" colorati (moderno + elegante). Nessuna immagine richiesta qui. -->
+      <div class="hero-blob b1" data-parallax="0.12"></div>
+      <div class="hero-blob b2" data-parallax="0.2"></div>
+      <div class="hero-blob b3" data-parallax="0.3"></div>
+    </div>
+    <div class="wrap hero-inner">
+      <div>
+        <p class="eyebrow" style="color:var(--coral)">Borse artigianali · fatte a mano su ordinazione</p>
+        <h1 id="heroTitle">
+          <span class="line"><i>Ogni borsa</i></span>
+          <span class="line"><i>nasce <em>a mano</em></i></span>
+          <span class="line"><i>per te.</i></span>
+        </h1>
+        <p class="hero-sub reveal">Milly crea borse su misura: scegli il modello, il colore e il materiale. La tua borsa viene realizzata a mano e spedita solo quando è perfetta.</p>
+        <div class="hero-cta reveal">
+          <a href="#collezione" class="btn btn-dark" data-testid="hero-shop-btn">Scopri la collezione</a>
+          <a href="#come-funziona" class="btn btn-ghost">Come funziona</a>
+        </div>
+      </div>
+      <div class="hero-photo reveal" data-parallax="-0.08">
+        <span class="hero-tag">Nuova collezione ’26</span>
+        <!-- IMMAGINE: foto principale della hero (borsa protagonista, formato verticale 3:4, alta qualità).
+             Sostituisci il div .ph qui sotto con: <img src="tue-foto/hero.jpg" alt="Borsa Milly"> -->
+        <div class="ph" data-label="IMMAGINE HERO · borsa protagonista 3:4"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ MARQUEE editoriale ============================ -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>Fatto a mano</span><span>Pelle italiana</span><span>Su ordinazione</span><span>Spedizione tracciata</span>
+      <span>Fatto a mano</span><span>Pelle italiana</span><span>Su ordinazione</span><span>Spedizione tracciata</span>
+    </div>
+  </div>
+
+  <!-- ============================ MANIFESTO (capitoli numerati) ============================ -->
+  <section id="storia">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="serif reveal">Non produciamo borse. Le facciamo nascere.</h2>
+        <p class="eyebrow reveal" style="color:var(--ink-soft)">Manifesto — 01 / 03</p>
+      </div>
+      <div class="chapters">
+        <div class="chapter reveal">
+          <div class="num">01<span class="dot" style="background:var(--coral)"></span></div>
+          <h3>Su ordinazione, mai in serie</h3>
+          <p>Nulla è pronto a magazzino. Ordini, e la tua borsa inizia ad esistere. Zero sprechi, zero rimanenze.</p>
+        </div>
+        <div class="chapter reveal">
+          <div class="num">02<span class="dot" style="background:var(--cobalt)"></span></div>
+          <h3>Materiali che durano</h3>
+          <p>Pellami e tessuti selezionati a mano. Ogni cucitura è pensata per accompagnarti per anni.</p>
+        </div>
+        <div class="chapter reveal">
+          <div class="num">03<span class="dot" style="background:var(--lime)"></span></div>
+          <h3>Dalla mano di Milly a casa tua</h3>
+          <p>Confermiamo l’ordine, realizziamo la borsa e la spediamo tracciata. Tu segui ogni passo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ CATEGORIE + GRIGLIA ARTICOLI ============================
+       *** SEZIONE ARTICOLI ***
+       I 12 articoli sono definiti nell'array JS "PRODOTTI" più in basso (cerca: "ARRAY ARTICOLI").
+       Le card qui sotto vengono generate automaticamente da quell'array.
+       Per modificare nome/prezzo/categoria/colori/descrizione: modifica SOLO l'array.
+       Ogni card contiene un PLACEHOLDER immagine con commento (vedi funzione renderCards). -->
+  <section id="collezione">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="serif reveal">La collezione<br/>completa</h2>
+        <p class="eyebrow reveal" style="color:var(--ink-soft)">12 modelli · fatti a mano</p>
+      </div>
+
+      <!-- Categorie (filtro) -->
+      <div id="categorie" class="toolbar">
+        <div class="filters" id="filters"><!-- chip categorie generate via JS --></div>
+        <div class="sort">
+          <select id="sortSelect" data-testid="sort-select">
+            <option value="default">Ordina per: In evidenza</option>
+            <option value="price-asc">Prezzo: crescente</option>
+            <option value="price-desc">Prezzo: decrescente</option>
+            <option value="name">Nome A-Z</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Griglia prodotti (generata via JS) -->
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <!-- ============================ FEATURE / BANNER ============================ -->
+  <section>
+    <div class="wrap">
+      <div class="feature reveal">
+        <div class="txt">
+          <p class="eyebrow" style="color:var(--coral)">Personalizzazione</p>
+          <h2 class="serif">La rendi<br/>davvero tua.</h2>
+          <p>Incisione delle iniziali, colore della fodera, tipo di tracolla. Scrivi le tue richieste nelle note dell’ordine: Milly le realizza a mano.</p>
+          <a href="#collezione" class="btn btn-coral" data-testid="feature-cta">Inizia a personalizzare</a>
+        </div>
+        <div class="media">
+          <!-- IMMAGINE: foto lifestyle/dettaglio (mani che lavorano la pelle, dettaglio cuciture). Formato orizzontale.
+               Sostituisci .ph con: <img src="tue-foto/atelier.jpg" alt="Atelier Milly"> -->
+          <div class="ph" data-label="IMMAGINE · dettaglio atelier / lavorazione"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ COME FUNZIONA ============================ -->
+  <section id="come-funziona">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="serif reveal">Dall’ordine<br/>alla tua porta</h2>
+        <p class="eyebrow reveal" style="color:var(--ink-soft)">4 passaggi</p>
+      </div>
+      <div class="steps">
+        <div class="step reveal"><div class="n" style="background:var(--coral)">1</div><h4>Ordini online</h4><p>Scegli modello, colore e aggiungi le tue note di personalizzazione.</p></div>
+        <div class="step reveal"><div class="n" style="background:var(--cobalt)">2</div><h4>Milly conferma</h4><p>Ricevi la conferma con tempi di realizzazione e dettagli.</p></div>
+        <div class="step reveal"><div class="n" style="background:var(--violet)">3</div><h4>Fatta a mano</h4><p>La borsa viene realizzata artigianalmente, pezzo per pezzo.</p></div>
+        <div class="step reveal"><div class="n" style="background:var(--lime)">4</div><h4>Spedita a te</h4><p>Pacco tracciato fino a casa. Segui la spedizione passo passo.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ NEWSLETTER ============================ -->
+  <section id="contatti">
+    <div class="wrap">
+      <div class="news reveal">
+        <p class="eyebrow">Resta aggiornata</p>
+        <h2 class="serif" style="max-width:18ch">Nuovi modelli, in anteprima.</h2>
+        <form onsubmit="return newsletterSubmit(event)">
+          <input type="email" placeholder="La tua email" required data-testid="newsletter-email" />
+          <button class="btn btn-dark" type="submit" data-testid="newsletter-submit">Iscrivimi</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ FOOTER ============================ -->
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div>
+          <div class="brand">Mill<span style="color:var(--coral)">y</span></div>
+          <p style="color:rgba(246,241,231,.7);margin-top:14px;max-width:34ch">Borse artigianali fatte a mano su ordinazione. Ogni pezzo è unico come chi lo porta.</p>
+        </div>
+        <div><h5>Shop</h5><ul><li><a href="#collezione">Collezione</a></li><li><a href="#categorie">Categorie</a></li><li><a href="#come-funziona">Come funziona</a></li></ul></div>
+        <div><h5>Assistenza</h5><ul><li><a href="#">Spedizioni</a></li><li><a href="#">Resi</a></li><li><a href="#">FAQ</a></li></ul></div>
+        <div><h5>Seguici</h5><ul><li><a href="#">Instagram</a></li><li><a href="#">TikTok</a></li><li><a href="#">Pinterest</a></li></ul></div>
+      </div>
+      <div class="foot-bottom">
+        <span>© 2026 Milly. Tutti i diritti riservati.</span>
+        <span>Preview statica — carrello e ordini simulati (nessun pagamento reale).</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================ SEARCH OVERLAY ============================ -->
+  <div class="search-panel" id="searchPanel">
+    <div class="wrap">
+      <input type="text" id="searchInput" placeholder="Cerca una borsa…" data-testid="search-input" />
+      <div class="search-res" id="searchRes"></div>
+    </div>
+  </div>
+
+  <!-- ============================ OVERLAY + CART DRAWER ============================ -->
+  <div class="overlay" id="overlay"></div>
+
+  <aside class="drawer" id="cartDrawer" data-testid="cart-drawer">
+    <div class="drawer-head">
+      <h3 class="serif">Il tuo carrello</h3>
+      <button class="close-x" data-close aria-label="Chiudi">✕</button>
+    </div>
+    <div class="drawer-body" id="cartBody"></div>
+    <div class="drawer-foot" id="cartFoot"></div>
+  </aside>
+
+  <!-- ============================ WISHLIST DRAWER ============================ -->
+  <aside class="drawer" id="wishDrawer" data-testid="wishlist-drawer">
+    <div class="drawer-head">
+      <h3 class="serif">I tuoi preferiti</h3>
+      <button class="close-x" data-close aria-label="Chiudi">✕</button>
+    </div>
+    <div class="drawer-body" id="wishBody"></div>
+  </aside>
+
+  <!-- ============================ QUICK VIEW MODAL ============================ -->
+  <div class="modal" id="qvModal">
+    <div class="modal-card">
+      <div style="display:flex;justify-content:flex-end;padding:14px 14px 0"><button class="close-x" data-close>✕</button></div>
+      <div class="qv" id="qvContent"></div>
+    </div>
+  </div>
+
+  <!-- ============================ CHECKOUT MODAL ============================ -->
+  <div class="modal" id="checkoutModal">
+    <div class="modal-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px 0">
+        <h2 class="serif" style="font-size:1.8rem">Completa l’ordine</h2>
+        <button class="close-x" data-close>✕</button>
+      </div>
+      <div class="checkout" id="checkoutContent"></div>
+    </div>
+  </div>
+
+  <!-- ============================ CONFERMA ORDINE MODAL ============================ -->
+  <div class="modal" id="confirmModal">
+    <div class="modal-card">
+      <div class="confirm" id="confirmContent"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- Librerie animazioni via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+  <script>
+  /* =====================================================================
+     *** ARRAY ARTICOLI *** — I 12 PRODOTTI DI MILLY
+     Modifica liberamente: name, cat, price, colors (esadecimali), desc, tag, rating.
+     Le immagini sono placeholder: quando avrai le foto, vedi renderCards() /
+     openQuickView() dove è indicato "IMMAGINE:" e sostituisci il .ph con <img>.
+  ===================================================================== */
+  const PRODOTTI = [
+    { id:1,  name:"Aurora Tote",      cat:"Tote",     price:420, tag:"Bestseller", rating:4.9, colors:["#C46A3F","#17120C","#E7398F"], desc:"Tote spaziosa in pelle pieno fiore, perfetta per ogni giorno. Interno foderato con tasca porta-laptop." },
+    { id:2,  name:"Lumen Clutch",     cat:"Clutch",   price:260, tag:"Nuovo",      rating:4.7, colors:["#D99A34","#2A46EF","#F6F1E7"], desc:"Pochette da sera elegante con chiusura magnetica dorata e tracolla catena removibile." },
+    { id:3,  name:"Sole Crossbody",   cat:"Tracolla", price:340, tag:"",           rating:4.8, colors:["#FF5B39","#6C4CF1","#17120C"], desc:"Tracolla compatta a mani libere, tracolla regolabile e scomparti organizzati." },
+    { id:4,  name:"Notte Baguette",   cat:"Baguette", price:300, tag:"",           rating:4.6, colors:["#17120C","#9FD62B","#C46A3F"], desc:"La baguette iconica, silhouette sotto-braccio che valorizza ogni look serale." },
+    { id:5,  name:"Duna Hobo",        cat:"Hobo",     price:380, tag:"",           rating:4.8, colors:["#C46A3F","#D99A34","#2A46EF"], desc:"Hobo morbida dalla linea fluida, pelle trattata a mano che si ammorbidisce nel tempo." },
+    { id:6,  name:"Vela Shopper",     cat:"Tote",     price:450, tag:"Premium",    rating:5.0, colors:["#17120C","#F6F1E7","#FF5B39"], desc:"Shopper strutturata di grande formato, manici rinforzati e base rigida protettiva." },
+    { id:7,  name:"Perla Mini",       cat:"Mini",     price:220, tag:"Nuovo",      rating:4.5, colors:["#E7398F","#F6F1E7","#6C4CF1"], desc:"Micro bag gioiello, giusto lo spazio per l’essenziale. Catena sottile removibile." },
+    { id:8,  name:"Onda Bucket",      cat:"Bucket",   price:360, tag:"",           rating:4.7, colors:["#9FD62B","#17120C","#D99A34"], desc:"Secchiello con coulisse in pelle intrecciata, forma iconica e portabilità totale." },
+    { id:9,  name:"Fiamma Shoulder",  cat:"Tracolla", price:390, tag:"",           rating:4.9, colors:["#FF5B39","#17120C","#2A46EF"], desc:"Borsa a spalla dalla linea decisa, hardware a contrasto e fodera in cotone stampato." },
+    { id:10, name:"Muse Satchel",     cat:"Satchel",  price:410, tag:"Bestseller", rating:4.8, colors:["#C46A3F","#6C4CF1","#F6F1E7"], desc:"Satchel classica con doppio manico e tracolla, il compromesso perfetto tra lavoro e stile." },
+    { id:11, name:"Iris Pochette",    cat:"Clutch",   price:190, tag:"",           rating:4.4, colors:["#6C4CF1","#E7398F","#D99A34"], desc:"Pochette essenziale dal formato tascabile, ideale per aperitivi e cerimonie." },
+    { id:12, name:"Regina Weekender", cat:"Weekender",price:520, tag:"Premium",    rating:5.0, colors:["#17120C","#C46A3F","#2A46EF"], desc:"Borsone da viaggio in pelle e canvas, capiente e resistente per le fughe del weekend." },
+  ];
+
+  /* ===================== STATO (localStorage) ===================== */
+  const money = n => "€" + n.toLocaleString('it-IT');
+  let cart = JSON.parse(localStorage.getItem('milly_cart')||'[]');
+  let wish = JSON.parse(localStorage.getItem('milly_wish')||'[]');
+  let activeCat = "Tutti";
+  let activeSort = "default";
+  let discount = 0;
+
+  const saveCart = () => { localStorage.setItem('milly_cart', JSON.stringify(cart)); renderCart(); updateBadges(); };
+  const saveWish = () => { localStorage.setItem('milly_wish', JSON.stringify(wish)); renderWish(); updateBadges(); renderCards(); };
+
+  /* ===================== HELPERS UI ===================== */
+  const $ = s => document.querySelector(s);
+  const overlay = $('#overlay');
+  function openEl(el){ el.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeAll(){ document.querySelectorAll('.drawer,.modal').forEach(e=>e.classList.remove('open')); overlay.classList.remove('open'); $('#searchPanel').classList.remove('open'); document.body.style.overflow=''; }
+  overlay.addEventListener('click', closeAll);
+  document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click', closeAll));
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeAll(); });
+
+  let toastT;
+  function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2200); }
+
+  /* ===================== FILTRI CATEGORIE ===================== */
+  function renderFilters(){
+    const cats = ["Tutti", ...new Set(PRODOTTI.map(p=>p.cat))];
+    $('#filters').innerHTML = cats.map(c=>`<button class="chip ${c===activeCat?'active':''}" data-cat="${c}" data-testid="filter-${c.toLowerCase()}">${c}</button>`).join('');
+    document.querySelectorAll('#filters .chip').forEach(ch=>ch.addEventListener('click',()=>{ activeCat=ch.dataset.cat; renderFilters(); renderCards(); }));
+  }
+
+  /* ===================== GRIGLIA PRODOTTI ===================== */
+  function getVisible(){
+    let list = PRODOTTI.filter(p=> activeCat==="Tutti" || p.cat===activeCat);
+    if(activeSort==="price-asc") list=[...list].sort((a,b)=>a.price-b.price);
+    if(activeSort==="price-desc") list=[...list].sort((a,b)=>b.price-a.price);
+    if(activeSort==="name") list=[...list].sort((a,b)=>a.name.localeCompare(b.name));
+    return list;
+  }
+  function starStr(r){ const full=Math.round(r); return "★".repeat(full)+"☆".repeat(5-full); }
+
+  function renderCards(){
+    const grid = $('#grid');
+    grid.innerHTML = getVisible().map(p=>`
+      <article class="card reveal" data-testid="product-card-${p.id}">
+        <div class="card-media">
+          <!-- IMMAGINE: foto prodotto "${p.name}" (formato verticale 4:5).
+               Sostituisci il div .ph con: <img src="tue-foto/prodotto-${p.id}.jpg" alt="${p.name}"> -->
+          <div class="ph" data-label="FOTO · ${p.name}" style="background-color:${p.colors[0]}22"></div>
+          ${p.tag?`<span class="card-tag" style="color:${p.colors[0]}">${p.tag}</span>`:''}
+          <button class="wish ${wish.includes(p.id)?'on':''}" data-wish="${p.id}" data-testid="wish-btn-${p.id}" aria-label="Preferiti">
+            <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C1 9 2.5 5.5 6 5.5c2 0 3.2 1.2 4 2.3.8-1.1 2-2.3 4-2.3 3.5 0 5 3.5 3.5 6.5C19 16.5 12 21 12 21z"/></svg>
+          </button>
+          <div class="quick"><button class="btn btn-dark" style="width:100%;justify-content:center" data-quick="${p.id}" data-testid="quickview-btn-${p.id}">Vista rapida</button></div>
+        </div>
+        <div class="card-body">
+          <div class="cat">${p.cat}</div>
+          <h3>${p.name}</h3>
+          <div class="rate"><span class="stars">${starStr(p.rating)}</span> ${p.rating.toFixed(1)}</div>
+          <div class="card-foot">
+            <div>
+              <div class="price">${money(p.price)}</div>
+              <div class="swatches">${p.colors.map(c=>`<span class="sw" style="background:${c}"></span>`).join('')}</div>
+            </div>
+            <button class="add-mini" data-add="${p.id}" data-testid="add-cart-btn-${p.id}" aria-label="Aggiungi al carrello">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+          </div>
+        </div>
+      </article>`).join('');
+
+    // eventi card
+    grid.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>addToCart(+b.dataset.add)));
+    grid.querySelectorAll('[data-wish]').forEach(b=>b.addEventListener('click',()=>toggleWish(+b.dataset.wish)));
+    grid.querySelectorAll('[data-quick]').forEach(b=>b.addEventListener('click',()=>openQuickView(+b.dataset.quick)));
+    if(window.ScrollTrigger) revealInit();
+  }
+
+  /* ===================== CARRELLO ===================== */
+  function addToCart(id, color){
+    const p = PRODOTTI.find(x=>x.id===id);
+    color = color || p.colors[0];
+    const line = cart.find(c=>c.id===id && c.color===color);
+    if(line) line.qty++; else cart.push({id, color, qty:1});
+    saveCart(); toast(`${p.name} aggiunta al carrello`);
+  }
+  function changeQty(idx, d){ cart[idx].qty+=d; if(cart[idx].qty<=0) cart.splice(idx,1); saveCart(); }
+  function removeLine(idx){ cart.splice(idx,1); saveCart(); }
+  const cartSubtotal = () => cart.reduce((s,c)=>{ const p=PRODOTTI.find(x=>x.id===c.id); return s+p.price*c.qty; },0);
+
+  function renderCart(){
+    const body=$('#cartBody'), foot=$('#cartFoot');
+    if(!cart.length){ body.innerHTML='<div class="empty">Il carrello è vuoto.<br/>Aggiungi la tua prima borsa ✦</div>'; foot.innerHTML=''; return; }
+    body.innerHTML = cart.map((c,i)=>{ const p=PRODOTTI.find(x=>x.id===c.id); return `
+      <div class="citem">
+        <!-- IMMAGINE: mini-anteprima prodotto nel carrello -->
+        <div class="thumb"><div class="ph" data-label="" style="background-color:${c.color}"></div></div>
+        <div>
+          <h4>${p.name}</h4>
+          <div class="meta">${p.cat} · <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${c.color};vertical-align:middle;border:1px solid rgba(0,0,0,.2)"></span></div>
+          <div class="qty"><button data-dec="${i}">−</button><span data-testid="cart-qty-${p.id}">${c.qty}</span><button data-inc="${i}">+</button></div>
+          <div class="rm" data-rm="${i}" data-testid="cart-remove-${p.id}">Rimuovi</div>
+        </div>
+        <div class="price">${money(p.price*c.qty)}</div>
+      </div>`; }).join('');
+
+    const sub=cartSubtotal(); const disc=Math.round(sub*discount);
+    foot.innerHTML=`
+      <div class="coupon">
+        <input type="text" id="couponInput" placeholder="Codice sconto (prova MILLY10)" data-testid="coupon-input"/>
+        <button class="btn btn-ghost" onclick="applyCoupon()" data-testid="coupon-apply">Applica</button>
+      </div>
+      <div class="rowline"><span>Subtotale</span><span>${money(sub)}</span></div>
+      ${discount?`<div class="rowline" style="color:var(--coral)"><span>Sconto (${discount*100}%)</span><span>−${money(disc)}</span></div>`:''}
+      <div class="rowline"><span>Spedizione</span><span>Calcolata al checkout</span></div>
+      <div class="rowline total"><span>Totale</span><span data-testid="cart-total">${money(sub-disc)}</span></div>
+      <button class="btn btn-coral" style="width:100%;justify-content:center;margin-top:14px" onclick="openCheckout()" data-testid="checkout-btn">Procedi all’ordine</button>`;
+
+    body.querySelectorAll('[data-inc]').forEach(b=>b.addEventListener('click',()=>changeQty(+b.dataset.inc,1)));
+    body.querySelectorAll('[data-dec]').forEach(b=>b.addEventListener('click',()=>changeQty(+b.dataset.dec,-1)));
+    body.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>removeLine(+b.dataset.rm)));
+  }
+  function applyCoupon(){ const v=($('#couponInput').value||'').trim().toUpperCase(); if(v==='MILLY10'){ discount=0.10; toast('Sconto 10% applicato!'); } else { discount=0; toast('Codice non valido'); } renderCart(); }
+
+  /* ===================== WISHLIST ===================== */
+  function toggleWish(id){ const i=wish.indexOf(id); if(i>-1) wish.splice(i,1); else { wish.push(id); toast('Aggiunto ai preferiti'); } saveWish(); }
+  function renderWish(){
+    const body=$('#wishBody');
+    if(!wish.length){ body.innerHTML='<div class="empty">Nessun preferito ancora.<br/>Tocca il cuore sulle borse che ami ♥</div>'; return; }
+    body.innerHTML = wish.map(id=>{ const p=PRODOTTI.find(x=>x.id===id); return `
+      <div class="citem">
+        <div class="thumb"><div class="ph" data-label="" style="background-color:${p.colors[0]}"></div></div>
+        <div><h4>${p.name}</h4><div class="meta">${p.cat}</div>
+          <div class="price" style="font-size:1rem;margin-top:6px">${money(p.price)}</div>
+          <button class="btn btn-dark" style="padding:8px 16px;font-size:.82rem;margin-top:8px" onclick="addToCart(${p.id});closeAll();openCart()">Aggiungi</button>
+        </div>
+        <div class="rm" data-rmw="${id}">✕</div>
+      </div>`; }).join('');
+    body.querySelectorAll('[data-rmw]').forEach(b=>b.addEventListener('click',()=>toggleWish(+b.dataset.rmw)));
+  }
+
+  /* ===================== QUICK VIEW ===================== */
+  let qvSelColor = null;
+  function openQuickView(id){
+    const p=PRODOTTI.find(x=>x.id===id); qvSelColor=p.colors[0];
+    $('#qvContent').innerHTML=`
+      <div class="media">
+        <!-- IMMAGINE: foto prodotto grande "${p.name}" nella vista rapida (4:5) -->
+        <div class="ph" data-label="FOTO · ${p.name}" style="background-color:${p.colors[0]}22"></div>
+      </div>
+      <div class="info">
+        <div class="cat" style="letter-spacing:.16em;text-transform:uppercase;font-size:.72rem;font-weight:700;color:var(--ink-soft)">${p.cat}</div>
+        <h2>${p.name}</h2>
+        <div class="rate"><span class="stars" style="color:var(--gold)">${starStr(p.rating)}</span> ${p.rating.toFixed(1)} · fatta a mano su ordinazione</div>
+        <div class="price" style="font-size:1.6rem;margin-top:10px">${money(p.price)}</div>
+        <p class="desc">${p.desc}</p>
+        <div style="font-size:.8rem;font-weight:700;letter-spacing:.04em">COLORE</div>
+        <div class="swatch-row" id="qvSwatches">${p.colors.map((c,i)=>`<span class="sw ${i===0?'sel':''}" style="background:${c}" data-c="${c}"></span>`).join('')}</div>
+        <button class="btn btn-coral" style="width:100%;justify-content:center" onclick="addToCart(${p.id}, qvSelColor); closeAll(); openCart();" data-testid="qv-add-btn">Aggiungi al carrello</button>
+        <p style="font-size:.82rem;color:var(--ink-soft);margin-top:14px">✦ Realizzazione 7–14 giorni · Spedizione tracciata · Reso 14 giorni</p>
+      </div>`;
+    $('#qvSwatches').querySelectorAll('.sw').forEach(s=>s.addEventListener('click',()=>{ qvSelColor=s.dataset.c; $('#qvSwatches').querySelectorAll('.sw').forEach(x=>x.classList.remove('sel')); s.classList.add('sel'); }));
+    openEl($('#qvModal'));
+  }
+
+  /* ===================== CHECKOUT ===================== */
+  function openCheckout(){
+    if(!cart.length){ toast('Il carrello è vuoto'); return; }
+    const sub=cartSubtotal(); const disc=Math.round(sub*discount);
+    $('#checkoutContent').innerHTML=`
+      <form id="checkoutForm" onsubmit="return placeOrder(event)">
+        <p class="eyebrow" style="color:var(--coral);margin-bottom:12px">Dati del cliente</p>
+        <div class="form-grid">
+          <div class="field"><label>Nome *</label><input required name="nome" data-testid="co-nome"/></div>
+          <div class="field"><label>Cognome *</label><input required name="cognome" data-testid="co-cognome"/></div>
+          <div class="field"><label>Email *</label><input required type="email" name="email" data-testid="co-email"/></div>
+          <div class="field"><label>Telefono *</label><input required name="telefono" data-testid="co-telefono"/></div>
+          <div class="field full"><label>Indirizzo *</label><input required name="indirizzo" placeholder="Via e numero civico" data-testid="co-indirizzo"/></div>
+          <div class="field"><label>Città *</label><input required name="citta" data-testid="co-citta"/></div>
+          <div class="field"><label>CAP *</label><input required name="cap" data-testid="co-cap"/></div>
+          <div class="field"><label>Provincia *</label><input required name="provincia" data-testid="co-provincia"/></div>
+          <div class="field"><label>Paese *</label>
+            <select name="paese" data-testid="co-paese"><option>Italia</option><option>Svizzera</option><option>Francia</option><option>Germania</option><option>Altro</option></select>
+          </div>
+          <div class="field full"><label>Note per Milly (personalizzazione, iniziali, richieste)</label><textarea rows="3" name="note" placeholder="Es. iniziali M.R. incise, fodera rossa…" data-testid="co-note"></textarea></div>
+        </div>
+
+        <p class="eyebrow" style="color:var(--coral);margin:22px 0 8px">Spedizione</p>
+        <div class="ship-opt">
+          <label><input type="radio" name="ship" value="Standard (gratis) · 3-5 gg" checked/> <span><strong>Standard</strong><br/><small>Gratis · 3-5 gg</small></span></label>
+          <label><input type="radio" name="ship" value="Express · €12 · 24-48h"/> <span><strong>Express</strong><br/><small>€12 · 24-48h</small></span></label>
+        </div>
+
+        <div class="summary">
+          <p class="eyebrow" style="margin-bottom:10px">Riepilogo ordine</p>
+          ${cart.map(c=>{const p=PRODOTTI.find(x=>x.id===c.id);return `<div class="rowline"><span>${p.name} ×${c.qty}</span><span>${money(p.price*c.qty)}</span></div>`;}).join('')}
+          ${discount?`<div class="rowline" style="color:var(--coral)"><span>Sconto</span><span>−${money(disc)}</span></div>`:''}
+          <div class="rowline total"><span>Totale</span><span>${money(sub-disc)}</span></div>
+        </div>
+
+        <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:14px">Preview: nessun pagamento reale. L’ordine verrà "inviato" a Milly per conferma e realizzazione a mano.</p>
+        <button class="btn btn-coral" type="submit" style="width:100%;justify-content:center" data-testid="place-order-btn">Invia ordine a Milly</button>
+      </form>`;
+    closeAll(); openEl($('#checkoutModal'));
+  }
+
+  function placeOrder(e){
+    e.preventDefault();
+    const f=e.target; const data=Object.fromEntries(new FormData(f).entries());
+    const order = { num:"MLY-"+Date.now().toString().slice(-6), date:new Date().toLocaleDateString('it-IT'), cliente:data, items:cart, totale:cartSubtotal()-Math.round(cartSubtotal()*discount) };
+    // In un sito vero: qui l'ordine verrebbe inviato al backend / pannello admin di Milly.
+    const orders = JSON.parse(localStorage.getItem('milly_orders')||'[]'); orders.push(order); localStorage.setItem('milly_orders', JSON.stringify(orders));
+    cart=[]; discount=0; saveCart();
+    $('#confirmContent').innerHTML=`
+      <div class="tick"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#17120C" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></div>
+      <h2 class="serif">Ordine inviato!</h2>
+      <p style="color:var(--ink-soft);max-width:44ch;margin:0 auto 14px">Grazie ${data.nome}. Milly ha ricevuto il tuo ordine e ti confermerà a breve via email a <strong>${data.email}</strong>.</p>
+      <p class="ordernum" data-testid="order-number">Ordine ${order.num}</p>
+      <p style="color:var(--ink-soft);margin:8px 0 24px">Totale: <strong>${money(order.totale)}</strong> · Spedizione: ${data.ship}</p>
+      <button class="btn btn-dark" onclick="closeAll()" data-testid="confirm-close-btn">Continua lo shopping</button>`;
+    closeAll(); openEl($('#confirmModal'));
+    return false;
+  }
+
+  function newsletterSubmit(e){ e.preventDefault(); e.target.reset(); toast('Iscrizione completata ✦'); return false; }
+
+  /* ===================== SEARCH ===================== */
+  function renderSearch(q){
+    q=(q||'').toLowerCase().trim();
+    const res = PRODOTTI.filter(p=>p.name.toLowerCase().includes(q)||p.cat.toLowerCase().includes(q));
+    $('#searchRes').innerHTML = (q? res : PRODOTTI).slice(0,8).map(p=>`
+      <div class="sres" data-sq="${p.id}">
+        <div class="thumb"><div class="ph" data-label="${p.name}" style="background-color:${p.colors[0]}22"></div></div>
+        <div style="font-weight:700;font-size:.9rem">${p.name}</div>
+        <div style="font-size:.82rem;color:var(--ink-soft)">${money(p.price)}</div>
+      </div>`).join('') || '<p style="color:var(--ink-soft)">Nessun risultato.</p>';
+    $('#searchRes').querySelectorAll('[data-sq]').forEach(el=>el.addEventListener('click',()=>{ closeAll(); openQuickView(+el.dataset.sq); }));
+  }
+
+  /* ===================== BADGES ===================== */
+  function updateBadges(){
+    const cn=cart.reduce((s,c)=>s+c.qty,0);
+    const cb=$('#cartBadge'); cb.style.display=cn?'grid':'none'; cb.textContent=cn;
+    const wb=$('#wishBadge'); wb.style.display=wish.length?'grid':'none'; wb.textContent=wish.length;
+  }
+
+  function openCart(){ renderCart(); openEl($('#cartDrawer')); }
+
+  /* ===================== EVENTI GLOBALI ===================== */
+  $('#openCart').addEventListener('click', openCart);
+  $('#openWish').addEventListener('click', ()=>{ renderWish(); openEl($('#wishDrawer')); });
+  $('#openSearch').addEventListener('click', ()=>{ renderSearch(''); $('#searchPanel').classList.add('open'); overlay.classList.add('open'); setTimeout(()=>$('#searchInput').focus(),300); });
+  $('#searchInput').addEventListener('input', e=>renderSearch(e.target.value));
+  $('#sortSelect').addEventListener('change', e=>{ activeSort=e.target.value; renderCards(); });
+  $('#burger').addEventListener('click', ()=>{ document.querySelector('.nav-links').style.display='flex'; toast('Menu: usa i link in alto ✦'); });
+
+  // Navbar scrolled
+  window.addEventListener('scroll', ()=>{ $('#nav').classList.toggle('scrolled', window.scrollY>40); });
+
+  /* ===================== ANIMAZIONI (GSAP + Lenis) ===================== */
+  function revealInit(){
+    gsap.utils.toArray('.reveal').forEach(el=>{
+      if(el.dataset.revealed) return; el.dataset.revealed="1";
+      gsap.set(el,{y:40,opacity:0});
+      gsap.to(el,{y:0,opacity:1,duration:1,ease:"power3.out",scrollTrigger:{trigger:el,start:"top 88%"}});
+    });
+  }
+
+  function initAnim(){
+    if(window.Lenis){
+      const lenis=new Lenis({lerp:.09,smoothWheel:true});
+      function raf(t){ lenis.raf(t); requestAnimationFrame(raf); } requestAnimationFrame(raf);
+      if(window.ScrollTrigger){ lenis.on('scroll', ScrollTrigger.update); }
+    }
+    if(window.gsap && window.ScrollTrigger){
+      gsap.registerPlugin(ScrollTrigger);
+      // Hero: reveal riga per riga (masked)
+      gsap.set('#heroTitle .line i',{yPercent:120});
+      gsap.to('#heroTitle .line i',{yPercent:0,duration:1.1,ease:"power4.out",stagger:.12,delay:.2});
+      revealInit();
+      // Parallax
+      gsap.utils.toArray('[data-parallax]').forEach(el=>{
+        const s=parseFloat(el.dataset.parallax);
+        gsap.to(el,{yPercent:s*100,ease:"none",scrollTrigger:{trigger:el,start:"top bottom",end:"bottom top",scrub:true}});
+      });
+    } else {
+      // Fallback senza JS libs: mostra tutto
+      document.querySelectorAll('.reveal').forEach(e=>{e.style.opacity=1;});
+      document.querySelectorAll('#heroTitle .line i').forEach(e=>e.style.transform='none');
+    }
+  }
+
+  /* ===================== INIT ===================== */
+  renderFilters();
+  renderCards();
+  renderCart();
+  renderWish();
+  updateBadges();
+  window.addEventListener('load', initAnim);
+  // sicurezza: se le CDN tardano, garantisci visibilità
+  setTimeout(()=>{ if(!window.gsap){ document.querySelectorAll('.reveal').forEach(e=>e.style.opacity=1); document.querySelectorAll('#heroTitle .line i').forEach(e=>e.style.transform='none'); } }, 1500);
+  </script>
+</body>
+</html>
