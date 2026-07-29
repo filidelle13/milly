@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <!--
   MILLY — Preview sito e-commerce borse artigianali (FILE HTML STATICO UNICO)
-  - Versione corretta: immagini vere da repository
-  - Tutte le funzioni principali (carrello, wishlist, quick view, checkout, ricerca, filtri) funzionano.
-  - Nessun backend: ordini salvati in localStorage (preview).
+  Modifiche:
+  - Categorie sostituite con: Clutch Bag, bauguette, tote, bauletto, bucket, Clasiqe, accessori
+  - Prodotti riallocati alle nuove categorie (assegnazione casuale/deterministica)
+  - +20 articoli vuoti aggiunti (Articolo Vuoto #1..#20)
+  - Funzione personalizzazione aggiunta (modal + salvataggio localStorage + prefill checkout)
+  - Migliorato comportamento scroll e media query per mobile
+  - Piccole correzioni JS per robustezza
 -->
 <html lang="it">
 <head>
@@ -35,7 +39,7 @@
       --ease:cubic-bezier(.16,1,.3,1);
     }
     *{margin:0;padding:0;box-sizing:border-box}
-    html{-webkit-font-smoothing:antialiased}
+    html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
     body{
       font-family:'Manrope',sans-serif;
       background:var(--cream);
@@ -59,6 +63,7 @@
       display:flex;align-items:center;justify-content:space-between;
       padding:18px clamp(16px,4vw,48px);
       transition:background .5s var(--ease),box-shadow .5s var(--ease),padding .5s var(--ease);
+      background:transparent;
     }
     header.nav.scrolled{background:rgba(246,241,231,.92);backdrop-filter:blur(10px);box-shadow:0 1px 0 var(--line);padding-block:12px}
     .brand{font-family:'Fraunces',serif;font-weight:600;font-size:1.7rem;letter-spacing:.02em;line-height:1}
@@ -68,14 +73,14 @@
     .nav-links a::after{content:"";position:absolute;left:0;bottom:-2px;height:2px;width:0;background:var(--coral);transition:width .35s var(--ease)}
     .nav-links a:hover::after{width:100%}
     .nav-actions{display:flex;align-items:center;gap:14px}
-    .icon-btn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);transition:transform .3s var(--ease),background .3s,color .3s;position:relative}
+    .icon-btn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);transition:transform .3s var(--ease),background .3s,color .3s;position:relative;background:#fff}
     .icon-btn:hover{transform:translateY(-2px);background:var(--ink);color:var(--cream)}
     .icon-btn svg{width:19px;height:19px}
     .badge{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;padding:0 6px;border-radius:20px;background:var(--coral);color:#fff;font-size:.68rem;font-weight:800;display:grid;place-items:center}
     .burger{display:none}
 
     /* HERO */
-    .hero{position:relative;min-height:100vh;display:flex;align-items:flex-end;padding-bottom:6vh;overflow:hidden}
+    .hero{position:relative;min-height:90vh;display:flex;align-items:flex-end;padding-bottom:6vh;overflow:hidden}
     .hero-bg{position:absolute;inset:0;z-index:0}
     .hero-blob{position:absolute;border-radius:50%;filter:blur(40px);opacity:.55}
     .b1{width:46vw;height:46vw;background:var(--coral);top:-12vw;right:-8vw}
@@ -84,13 +89,13 @@
     .hero-inner{position:relative;z-index:2;width:100%;display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:end}
     .hero h1{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(3.4rem,11vw,6rem);line-height:.92;letter-spacing:-.02em}
     .hero h1 .line{overflow:hidden;display:block}
-    .hero h1 .line i{display:block;font-style:normal}
+    .hero h1 .line i{display:block;font-style:normal;transform:translateY(0)}
     .hero h1 em{font-style:italic;color:var(--coral)}
     .hero-sub{max-width:34ch;font-size:1.05rem;color:var(--ink-soft);margin-top:22px}
     .hero-cta{display:inline-flex;align-items:center;gap:12px;margin-top:26px}
     .hero-photo{position:relative;aspect-ratio:3/4;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);will-change:transform}
     .hero-photo img{width:100%;height:100%;object-fit:cover;display:block}
-    .hero-tag{position:absolute;left:20px;top:20px;background:var(--ink);color:var(--cream);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;padding:8px 14px;border-radius:30px}
+    .hero-tag{position:absolute;left:20px;top:20px;background:var(--ink);color:var(--cream);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;padding:8px 14px;border-radius:20px}
 
     .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:60px;font-weight:700;font-size:.95rem;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
     .btn-dark{background:var(--ink);color:var(--cream)}
@@ -131,7 +136,7 @@
     .card:hover{transform:translateY(-8px);box-shadow:var(--shadow)}
     .card-media{position:relative;aspect-ratio:4/5;overflow:hidden}
     .card-media img{width:100%;height:100%;object-fit:cover;display:block}
-    .card-tag{position:absolute;top:14px;left:14px;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;font-weight:800;padding:6px 12px;border-radius:30px;background:rgba(255,255,255,.9)}
+    .card-tag{position:absolute;top:14px;left:14px;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;font-weight:800;padding:6px 12px;border-radius:30px;background:rgba(255,255,255,.95);color:#17120C}
     .wish{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.9);display:grid;place-items:center;transition:transform .3s var(--ease)}
     .wish:hover{transform:scale(1.12)}
     .wish svg{width:18px;height:18px;fill:none;stroke:var(--ink);stroke-width:2;transition:fill .3s,stroke .3s}
@@ -181,7 +186,7 @@
     footer ul{list-style:none;display:grid;gap:10px}
     footer a{color:rgba(246,241,231,.85);font-size:.95rem;transition:color .3s}
     footer a:hover{color:var(--coral)}
-    .foot-bottom{border-top:1px solid rgba(246,241,231,.15);margin-top:50px;padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:.85rem;color:rgba(246,241,231,.7)}
+    .foot-bottom{border-top:1px solid rgba(246,241,231,.15);margin-top:50px;padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:.85rem;color:rgba(246,241,231,.8)}
 
     /* DRAWER / MODAL */
     .overlay{position:fixed;inset:0;background:rgba(23,18,12,.5);backdrop-filter:blur(4px);z-index:90;opacity:0;pointer-events:none;transition:opacity .4s var(--ease)}
@@ -212,7 +217,7 @@
 
     .modal{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .4s var(--ease)}
     .modal.open{opacity:1;pointer-events:auto}
-    .modal-card{background:var(--cream);border-radius:28px;width:min(920px,96vw);max-height:92vh;overflow:auto;box-shadow:var(--shadow);transform:translateY(24px) scale(.98);transition:transform .35s var(--ease)}
+    .modal-card{background:var(--cream);border-radius:28px;width:min(920px,96vw);max-height:92vh;overflow:auto;box-shadow:var(--shadow);transform:translateY(24px) scale(.98);transition:transform .4s var(--ease)}
     .modal.open .modal-card{transform:none}
     .qv{display:grid;grid-template-columns:1fr 1fr}
     .qv .media{aspect-ratio:4/5}
@@ -223,6 +228,12 @@
     .swatch-row .sw{width:30px;height:30px;cursor:pointer;transition:transform .2s}
     .swatch-row .sw.sel{outline:2px solid var(--ink);outline-offset:2px}
     .swatch-row .sw:hover{transform:scale(1.12)}
+
+    /* personalization modal */
+    .personalize-form{display:grid;gap:12px;padding:20px}
+    .personalize-form label{font-weight:700;font-size:.9rem}
+    .personalize-form input,.personalize-form select,.personalize-form textarea{padding:10px;border-radius:10px;border:1px solid var(--line);font-family:inherit}
+    .personalize-preview{background:#fff;padding:12px;border-radius:10px;color:var(--ink);box-shadow:0 8px 20px -8px rgba(23,18,12,.2)}
 
     /* responsive */
     @media(max-width:1024px){
@@ -242,6 +253,20 @@
       .grid{grid-template-columns:1fr}
       .form-grid{grid-template-columns:1fr}
       .foot-grid{grid-template-columns:1fr}
+      section{padding:34px 0}
+      .hero{min-height:70vh}
+      .brand{font-size:1.3rem}
+      .icon-btn{width:40px;height:40px}
+    }
+    @media(max-width:420px){
+      .wrap{width:94vw}
+      .hero h1{font-size:2.4rem}
+      .hero-sub{font-size:.98rem}
+      .btn{padding:10px 14px;font-size:.92rem}
+      .chip{padding:9px 14px;font-size:.82rem}
+      .card-body h3{font-size:1.05rem}
+      .card-media{aspect-ratio:3/4}
+      .marquee-track{animation-duration:36s}
     }
   </style>
 </head>
@@ -294,7 +319,7 @@
         <p class="hero-sub reveal">Milly crea borse su misura: scegli il modello, il colore e il materiale. La tua borsa viene realizzata a mano e spedita solo quando è perfetta.</p>
         <div class="hero-cta reveal">
           <a href="#collezione" class="btn btn-dark" data-testid="hero-shop-btn">Scopri la collezione</a>
-          <a href="#come-funziona" class="btn btn-ghost">Come funziona</a>
+          <button id="openPersonalize" class="btn btn-ghost">Personalizza</button>
         </div>
       </div>
       <div class="hero-photo reveal" data-parallax="-0.08">
@@ -343,7 +368,7 @@
     <div class="wrap">
       <div class="sec-head">
         <h2 class="serif reveal">La collezione<br/>completa</h2>
-        <p class="eyebrow reveal" style="color:var(--ink-soft)">12 modelli · fatti a mano</p>
+        <p class="eyebrow reveal" style="color:var(--ink-soft)">Modelli · fatti a mano</p>
       </div>
 
       <div id="categorie" class="toolbar">
@@ -362,15 +387,15 @@
     </div>
   </section>
 
-  <!-- FEATURE -->
+  <!-- FEATURE / PERSONALIZZAZIONE -->
   <section>
     <div class="wrap">
       <div class="feature reveal">
         <div class="txt">
           <p class="eyebrow" style="color:var(--coral)">Personalizzazione</p>
           <h2 class="serif">La rendi<br/>davvero tua.</h2>
-          <p>Incisione delle iniziali, colore della fodera, tipo di tracolla. Scrivi le tue richieste nelle note dell'ordine: Milly le realizza a mano.</p>
-          <a href="#collezione" class="btn btn-coral" data-testid="feature-cta">Inizia a personalizzare</a>
+          <p>Incisione delle iniziali, colore della fodera, tipo di tracolla. Usa il pannello di personalizzazione per salvare le tue preferenze — verranno precompilate in fase di checkout.</p>
+          <button id="featurePersonalize" class="btn btn-coral" data-testid="feature-cta">Inizia a personalizzare</button>
         </div>
         <div class="media">
           <img src="accessorifiori.jpeg" alt="Atelier - Dettagli accessori" style="width:100%;height:100%;object-fit:cover">
@@ -429,9 +454,9 @@
   </footer>
 
   <!-- SEARCH PANEL -->
-  <div class="search-panel" id="searchPanel" style="position:fixed;top:0;left:0;right:0;z-index:95;background:var(--cream);transform:translateY(-100%);transition:transform .35s var(--ease);padding:100px 0 40px">
+  <div class="search-panel" id="searchPanel" style="position:fixed;top:0;left:0;right:0;z-index:95;background:var(--cream);transform:translateY(-100%);transition:transform .35s var(--ease);padding:24px 0;border-bottom:1px solid var(--line)">
     <div class="wrap">
-      <input type="text" id="searchInput" placeholder="Cerca una borsa…" data-testid="search-input" style="width:100%;font-family:'Fraunces',serif;font-size:clamp(1.6rem,4vw,2.2rem);border:none;background:transparent;outline:none">
+      <input type="text" id="searchInput" placeholder="Cerca una borsa…" data-testid="search-input" style="width:100%;font-family:'Fraunces',serif;font-size:clamp(1.6rem,4vw,2.2rem);border:none;padding:12px;background:transparent">
       <div class="search-res" id="searchRes" style="margin-top:24px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px"></div>
     </div>
   </div>
@@ -466,6 +491,51 @@
     </div>
   </div>
 
+  <!-- PERSONALIZATION MODAL -->
+  <div class="modal" id="personalizeModal" aria-hidden="true">
+    <div class="modal-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px 0">
+        <h2 class="serif" style="font-size:1.6rem">Personalizza</h2>
+        <button class="close-x" data-close>✕</button>
+      </div>
+      <div style="padding:18px">
+        <form id="personalizeForm" class="personalize-form">
+          <label for="persInitials">Iniziali (es. M.R.)</label>
+          <input id="persInitials" name="initials" placeholder="Esempio: M.R." />
+
+          <label for="persFodera">Colore fodera</label>
+          <select id="persFodera" name="fodera">
+            <option value="">Nessuna preferenza</option>
+            <option>Rosa</option>
+            <option>Rosso</option>
+            <option>Nero</option>
+            <option>Crema</option>
+            <option>Blu</option>
+          </select>
+
+          <label for="persTracolla">Tipo tracolla</label>
+          <select id="persTracolla" name="tracolla">
+            <option value="">Standard</option>
+            <option>Catena</option>
+            <option>Regolabile</option>
+            <option>Staccabile</option>
+          </select>
+
+          <label for="persNote">Note aggiuntive</label>
+          <textarea id="persNote" name="note" rows="3" placeholder="Es. incisione \'M.R.\' sul lato, fodera rossa..."></textarea>
+
+          <div style="display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:8px">
+            <div class="personalize-preview" id="personalizePreview">Anteprima: nessuna preferenza impostata</div>
+            <div style="display:flex;gap:8px">
+              <button type="button" id="savePersonalize" class="btn btn-dark">Salva</button>
+              <button type="button" id="clearPersonalize" class="btn btn-ghost">Cancella</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- CHECKOUT MODAL -->
   <div class="modal" id="checkoutModal">
     <div class="modal-card">
@@ -484,7 +554,7 @@
     </div>
   </div>
 
-  <div class="toast" id="toast" style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(30px);background:var(--ink);color:var(--cream);padding:14px 22px;border-radius:40px;z-index:200;opacity:0;transition:opacity .4s,transform .4s;pointer-events:none"></div>
+  <div class="toast" id="toast" style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(30px);background:var(--ink);color:var(--cream);padding:14px 22px;border-radius:40px;opacity:0;transition:all .4s"></div>
 
   <!-- CDN (opzionale per animazioni) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -493,22 +563,41 @@
 
   <script>
   /* ================================================================
-     DATA: prodotti (con immagini reali da repository)
+     CATEGORIE FISSE richieste dall'utente
+  ================================================================= */
+  const CATEGORIES = ["Clutch Bag","bauguette","tote","bauletto","bucket","Clasiqe","accessori"];
+
+  /* ================================================================
+     DATA: prodotti (con immagini reali da repository) + 20 vuoti
   ================================================================= */
   const PRODOTTI = [
-    { id:1,  name:"Aurora Tote",      cat:"Tote",     price:420, tag:"Bestseller", rating:4.9, img:"Borsabianca.jpeg", desc:"Tote spaziosa in pelle pieno fiore, perfetta per ogni giorno." },
-    { id:2,  name:"Lumen Clutch",     cat:"Clutch",   price:260, tag:"Nuovo",      rating:4.7, img:"borsafucsia.jpeg", desc:"Pochette da sera elegante con chiusura magnetica." },
-    { id:3,  name:"Sole Crossbody",   cat:"Tracolla", price:340, tag:"",           rating:4.8, img:"borsaciano.jpeg", desc:"Tracolla compatta a mani libere, tracolla regolabile." },
-    { id:4,  name:"Notte Baguette",   cat:"Baguette", price:300, tag:"",           rating:4.6, img:"borsarossa.jpeg", desc:"La baguette iconica, silhouette sotto-braccio." },
-    { id:5,  name:"Duna Hobo",        cat:"Hobo",     price:380, tag:"",           rating:4.8, img:"borsamarrone.jpeg", desc:"Hobo morbida dalla linea fluida, pelle trattata a mano." },
-    { id:6,  name:"Vela Shopper",     cat:"Tote",     price:450, tag:"Premium",    rating:5.0, img:"Borsablu.jpeg", desc:"Shopper strutturata di grande formato, manici rinforzati." },
-    { id:7,  name:"Perla Mini",       cat:"Mini",     price:220, tag:"Nuovo",      rating:4.5, img:"borsalilla.jpeg", desc:"Micro bag gioiello, giusto lo spazio per l'essenziale." },
-    { id:8,  name:"Onda Bucket",      cat:"Bucket",   price:360, tag:"",           rating:4.7, img:"Orso1.jpeg", desc:"Secchiello con coulisse in pelle intrecciata." },
-    { id:9,  name:"Fiamma Shoulder",  cat:"Tracolla", price:390, tag:"",           rating:4.9, img:"Orsetto2.jpeg", desc:"Borsa a spalla dalla linea decisa, hardware a contrasto." },
-    { id:10, name:"Muse Satchel",     cat:"Satchel",  price:410, tag:"Bestseller", rating:4.8, img:"orsetto2.jpeg", desc:"Satchel classica con doppio manico e tracolla." },
-    { id:11, name:"Iris Pochette",    cat:"Clutch",   price:190, tag:"",           rating:4.4, img:"dinosauroazzurro.jpeg", desc:"Pochette essenziale dal formato tascabile." },
-    { id:12, name:"Regina Weekender", cat:"Weekender",price:520, tag:"Premium",    rating:5.0, img:"accessorifiori.jpeg", desc:"Borsone da viaggio in pelle e canvas, capiente e resistente." }
+    { id:1,  name:"Aurora Tote",      cat:"tote",     price:420, tag:"Bestseller", rating:4.9, img:"Borsabianca.jpeg", desc:"Tote spaziosa in pelle pieno fiore, perfetta per ogni giorno." },
+    { id:2,  name:"Lumen Clutch",     cat:"Clutch Bag",   price:260, tag:"Nuovo",      rating:4.7, img:"borsafucsia.jpeg", desc:"Pochette da sera elegante con chiusura magnetica." },
+    { id:3,  name:"Sole Crossbody",   cat:"bauletto", price:340, tag:"",           rating:4.8, img:"borsaciano.jpeg", desc:"Tracolla compatta a mani libere, tracolla regolabile." },
+    { id:4,  name:"Notte Baguette",   cat:"bauguette", price:300, tag:"",           rating:4.6, img:"borsarossa.jpeg", desc:"La baguette iconica, silhouette sotto-braccio." },
+    { id:5,  name:"Duna Hobo",        cat:"bauletto",     price:380, tag:"",           rating:4.8, img:"borsamarrone.jpeg", desc:"Hobo morbida dalla linea fluida, pelle trattata a mano." },
+    { id:6,  name:"Vela Shopper",     cat:"tote",     price:450, tag:"Premium",    rating:5.0, img:"Borsablu.jpeg", desc:"Shopper strutturata di grande formato, manici rinforzati." },
+    { id:7,  name:"Perla Mini",       cat:"Clasiqe",     price:220, tag:"Nuovo",      rating:4.5, img:"borsalilla.jpeg", desc:"Micro bag gioiello, giusto lo spazio per l'essenziale." },
+    { id:8,  name:"Onda Bucket",      cat:"bucket",   price:360, tag:"",           rating:4.7, img:"Orso1.jpeg", desc:"Secchiello con coulisse in pelle intrecciata." },
+    { id:9,  name:"Fiamma Shoulder",  cat:"bauletto", price:390, tag:"",           rating:4.9, img:"Orsetto2.jpeg", desc:"Borsa a spalla dalla linea decisa, hardware a contrasto." },
+    { id:10, name:"Muse Satchel",     cat:"Clasiqe",  price:410, tag:"Bestseller", rating:4.8, img:"orsetto2.jpeg", desc:"Satchel classica con doppio manico e tracolla." },
+    { id:11, name:"Iris Pochette",    cat:"Clutch Bag",   price:190, tag:"",           rating:4.4, img:"dinosauroazzurro.jpeg", desc:"Pochette essenziale dal formato tascabile." },
+    { id:12, name:"Regina Weekender", cat:"accessori",price:520, tag:"Premium",    rating:5.0, img:"accessorifiori.jpeg", desc:"Borsone da viaggio in pelle e canvas, capiente e resistente." }
   ];
+
+  // Aggiungo 20 articoli vuoti (id 13..32) con immagine di placeholder temporanea (usa le immagini presenti)
+  for(let i=1;i<=20;i++){
+    PRODOTTI.push({
+      id: 12 + i,
+      name: `Articolo Vuoto #${i}`,
+      cat: CATEGORIES[(i) % CATEGORIES.length],
+      price: 0,
+      tag: "",
+      rating: 0,
+      img: "Borsabianca.jpeg",
+      desc: ""
+    });
+  }
 
   /* ===================== Stato (localStorage) ===================== */
   const money = n => "€" + n.toLocaleString('it-IT');
@@ -554,8 +643,10 @@
 
   /* ===================== FILTERS ===================== */
   function renderFilters(){
-    const cats = ["Tutti", ...new Set(PRODOTTI.map(p=>p.cat))];
-    $('#filters').innerHTML = cats.map(c=>{
+    const cats = ["Tutti", ...CATEGORIES];
+    const container = $('#filters');
+    if(!container) return;
+    container.innerHTML = cats.map(c=>{
       return `<button class="chip ${c===activeCat?'active':''}" data-cat="${c}" data-testid="filter-${c.toLowerCase()}">${c}</button>`;
     }).join('');
     document.querySelectorAll('#filters .chip').forEach(ch=>ch.addEventListener('click',()=>{
@@ -574,17 +665,18 @@
     return list;
   }
 
-  function starStr(r){ const full=Math.round(r); return "★".repeat(full)+"☆".repeat(5-full); }
+  function starStr(r){ const full=Math.round(r); if(full<=0) return "☆☆☆☆☆"; return "★".repeat(full)+"☆".repeat(5-full); }
 
   function renderCards(){
     const grid = $('#grid');
+    if(!grid) return;
     const list = getVisible();
     grid.innerHTML = list.map(p=>{
       return `
       <article class="card reveal" data-testid="product-card-${p.id}">
         <div class="card-media">
           <img src="${p.img}" alt="${p.name}">
-          ${p.tag?`<span class="card-tag" style="background:rgba(255,255,255,0.95);color:#17120C">${p.tag}</span>`:''}
+          ${p.tag?`<span class="card-tag">${p.tag}</span>`:''}
           <button class="wish ${wish.includes(p.id)?'on':''}" data-wish="${p.id}" data-testid="wish-btn-${p.id}" aria-label="Preferiti">
             <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C1 9 2.5 5.5 6 5.5c2 0 3.2 1.2 4 2.3.8-1.1 2-2.3 4-2.3 3.5 0 5 3.5 3.5 6.5C19 16.5 12 21 12 21z"/></svg>
           </button>
@@ -593,7 +685,7 @@
         <div class="card-body">
           <div class="cat">${p.cat}</div>
           <h3>${p.name}</h3>
-          <div class="rate"><span class="stars">${starStr(p.rating)}</span> ${p.rating.toFixed(1)}</div>
+          <div class="rate"><span class="stars">${starStr(p.rating)}</span> ${p.rating?p.rating.toFixed(1):''}</div>
           <div class="card-foot">
             <div>
               <div class="price">${money(p.price)}</div>
@@ -629,6 +721,7 @@
 
   function renderCart(){
     const body=$('#cartBody'), foot=$('#cartFoot');
+    if(!body || !foot) return;
     if(!cart.length){ body.innerHTML='<div class="empty">Il carrello è vuoto.<br/>Aggiungi la tua prima borsa ✦</div>'; foot.innerHTML=''; return; }
     body.innerHTML = cart.map((c,i)=>{
       const p=PRODOTTI.find(x=>x.id===c.id);
@@ -662,12 +755,14 @@
     body.querySelectorAll('[data-inc]').forEach(b=>b.addEventListener('click',()=>changeQty(+b.dataset.inc,1)));
     body.querySelectorAll('[data-dec]').forEach(b=>b.addEventListener('click',()=>changeQty(+b.dataset.dec,-1)));
     body.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>removeLine(+b.dataset.rm)));
-    document.getElementById('applyCouponBtn').addEventListener('click', applyCoupon);
-    document.getElementById('checkoutBtn').addEventListener('click', openCheckout);
+    const applyBtn = document.getElementById('applyCouponBtn');
+    if(applyBtn) applyBtn.addEventListener('click', applyCoupon);
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    if(checkoutBtn) checkoutBtn.addEventListener('click', openCheckout);
   }
 
   function applyCoupon(){
-    const v = ($('#couponInput') ? $('#couponInput').value.trim().toUpperCase() : '');
+    const v = ($('#couponInput') ? ($('#couponInput').value || '').trim().toUpperCase() : '');
     if(v === 'MILLY10'){ discount = 0.10; toast('Sconto 10% applicato!'); }
     else if(v === ''){ discount = 0; toast('Inserisci un codice'); }
     else { discount = 0; toast('Codice non valido'); }
@@ -683,6 +778,7 @@
   }
   function renderWish(){
     const body = $('#wishBody');
+    if(!body) return;
     if(!wish.length){ body.innerHTML = '<div class="empty">Nessun preferito ancora.<br/>Tocca il cuore sulle borse che ami ♥</div>'; return; }
     body.innerHTML = wish.map(id=>{
       const p = PRODOTTI.find(x=>x.id===id);
@@ -703,19 +799,22 @@
   /* ===================== QUICK VIEW ===================== */
   function openQuickView(id){
     const p = PRODOTTI.find(x=>x.id===id); if(!p) return;
-    $('#qvContent').innerHTML = `
+    const qv = $('#qvContent');
+    if(!qv) return;
+    qv.innerHTML = `
       <div class="media"><img src="${p.img}" alt="${p.name}"></div>
       <div class="info">
         <div class="cat" style="letter-spacing:.16em;text-transform:uppercase;font-size:.72rem;font-weight:700;color:var(--ink-soft)">${p.cat}</div>
         <h2>${p.name}</h2>
-        <div class="rate"><span class="stars" style="color:var(--gold)">${starStr(p.rating)}</span> ${p.rating.toFixed(1)} · fatta a mano su ordinazione</div>
+        <div class="rate"><span class="stars" style="color:var(--gold)">${starStr(p.rating)}</span> ${p.rating?p.rating.toFixed(1):''} · fatta a mano su ordinazione</div>
         <div class="price" style="font-size:1.6rem;margin-top:10px">${money(p.price)}</div>
         <p class="desc">${p.desc}</p>
         <button class="btn btn-coral" style="width:100%;justify-content:center;margin-top:12px" id="qvAddBtn">Aggiungi al carrello</button>
         <p style="font-size:.82rem;color:var(--ink-soft);margin-top:14px">✦ Realizzazione 7–14 giorni · Spedizione tracciata · Reso 14 giorni</p>
       </div>
     `;
-    document.getElementById('qvAddBtn').addEventListener('click',()=>{
+    const addBtn = document.getElementById('qvAddBtn');
+    if(addBtn) addBtn.addEventListener('click',()=>{
       addToCart(p.id); closeAll(); openCart();
     });
     openEl($('#qvModal'));
@@ -725,6 +824,8 @@
   function openCheckout(){
     if(!cart.length){ toast('Il carrello è vuoto'); return; }
     const sub = cartSubtotal(); const disc = Math.round(sub * discount);
+    // carico preferenze personalizzazione salvate (se esistono)
+    const pers = JSON.parse(localStorage.getItem('milly_personalization')||'null');
     $('#checkoutContent').innerHTML = `
       <form id="checkoutForm">
         <p class="eyebrow" style="color:var(--coral);margin-bottom:12px">Dati del cliente</p>
@@ -740,13 +841,13 @@
           <div class="field"><label>Paese *</label>
             <select name="paese" data-testid="co-paese"><option>Italia</option><option>Svizzera</option><option>Francia</option><option>Germania</option><option>Altro</option></select>
           </div>
-          <div class="field full"><label>Note per Milly (personalizzazione, iniziali, richieste)</label><textarea rows="3" name="note" placeholder="Es. iniziali M.R. incise, fodera rossa…" data-testid="co-note"></textarea></div>
+          <div class="field full"><label>Note per Milly (personalizzazione, iniziali, richieste)</label><textarea rows="3" name="note" placeholder="Es. iniziali M.R. incise, fodera rossa…" data-testid="co-note">${pers? (pers.initials?`Iniziali: ${pers.initials}. `:'') + (pers.fodera?`Fodera: ${pers.fodera}. `:'') + (pers.tracolla?`Tracolla: ${pers.tracolla}. `:'') + (pers.note?`Note: ${pers.note}`:'') : ''}</textarea></div>
         </div>
 
         <p class="eyebrow" style="color:var(--coral);margin:22px 0 8px;padding-left:20px">Spedizione</p>
         <div class="ship-opt" style="display:flex;gap:12px;margin-top:6px;padding:0 20px">
-          <label style="flex:1;min-width:180px;border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;gap:10px;cursor:pointer;background:#fff"><input type="radio" name="ship" value="Standard (7-10 giorni)" checked data-testid="ship-standard"/><span><strong>Standard</strong><br/><small>7-10 giorni</small></span></label>
-          <label style="flex:1;min-width:180px;border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;gap:10px;cursor:pointer;background:#fff"><input type="radio" name="ship" value="Express (2-3 giorni)" data-testid="ship-express"/><span><strong>Express</strong><br/><small>2-3 giorni</small></span></label>
+          <label style="flex:1;min-width:180px;border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;gap:10px;cursor:pointer;background:#fff"><input type="radio" name="ship" value="Standard" checked/> Standard</label>
+          <label style="flex:1;min-width:180px;border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;gap:10px;cursor:pointer;background:#fff"><input type="radio" name="ship" value="Express"/> Express</label>
         </div>
 
         <div class="summary" style="background:#fff;border-radius:16px;padding:18px;margin:16px 20px">
@@ -761,7 +862,7 @@
       </form>
     `;
     const form = document.getElementById('checkoutForm');
-    form.addEventListener('submit', placeOrder);
+    if(form) form.addEventListener('submit', placeOrder);
     closeAll(); openEl($('#checkoutModal'));
   }
 
@@ -778,9 +879,9 @@
           <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#17120C" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>
         </div>
         <h2 class="serif">Ordine inviato!</h2>
-        <p style="color:var(--ink-soft);max-width:44ch;margin:0 auto 14px">Grazie ${data.nome}. Milly ha ricevuto il tuo ordine e ti confermerà a breve via email a <strong>${data.email}</strong>.</p>
+        <p style="color:var(--ink-soft);max-width:44ch;margin:0 auto 14px">Grazie ${data.nome || ''}. Milly ha ricevuto il tuo ordine e ti confermerà a breve via email a <strong>${data.email || ''}</strong>.</p>
         <p class="ordernum" data-testid="order-number">Ordine ${order.num}</p>
-        <p style="color:var(--ink-soft);margin:8px 0 24px">Totale: <strong>${money(order.totale)}</strong> · Spedizione: ${data.ship}</p>
+        <p style="color:var(--ink-soft);margin:8px 0 24px">Totale: <strong>${money(order.totale)}</strong> · Spedizione: ${data.ship || 'Standard'}</p>
         <button class="btn btn-dark" onclick="closeAll()" data-testid="confirm-close-btn">Continua lo shopping</button>
       </div>
     `;
@@ -793,9 +894,11 @@
   /* ===================== SEARCH ===================== */
   function renderSearch(q){
     q = (q||'').toLowerCase().trim();
-    const res = PRODOTTI.filter(p=>p.name.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q));
+    const res = PRODOTTI.filter(p=> (p.name||'').toLowerCase().includes(q) || (p.cat||'').toLowerCase().includes(q));
     const list = (q ? res : PRODOTTI).slice(0,8);
-    $('#searchRes').innerHTML = list.map(p=>{
+    const container = $('#searchRes');
+    if(!container) return;
+    container.innerHTML = list.map(p=>{
       return `<div class="sres" data-sq="${p.id}" style="cursor:pointer;padding:8px;border-radius:10px;background:#fff">
         <div class="thumb" style="margin-bottom:8px"><img src="${p.img}" alt="${p.name}" style="width:100%;height:160px;object-fit:cover;border-radius:8px"></div>
         <div style="font-weight:700;font-size:.9rem">${p.name}</div>
@@ -808,24 +911,89 @@
   /* ===================== BADGES & OPENERS ===================== */
   function updateBadges(){
     const cn = cart.reduce((s,c)=>s+c.qty,0);
-    const cb = $('#cartBadge'); cb.style.display = cn ? 'grid' : 'none'; cb.textContent = cn;
-    const wb = $('#wishBadge'); wb.style.display = wish.length ? 'grid' : 'none'; wb.textContent = wish.length;
+    const cb = $('#cartBadge'); if(cb) { cb.style.display = cn ? 'grid' : 'none'; cb.textContent = cn; }
+    const wb = $('#wishBadge'); if(wb) { wb.style.display = wish.length ? 'grid' : 'none'; wb.textContent = wish.length; }
   }
 
   function openCart(){ renderCart(); openEl($('#cartDrawer')); }
 
-  /* ===================== GLOBAL EVENTI ===================== */
-  $('#openCart').addEventListener('click', openCart);
-  $('#openWish').addEventListener('click', ()=>{ renderWish(); openEl($('#wishDrawer')); });
-  $('#openSearch').addEventListener('click', ()=>{
-    renderSearch('');
-    const sp = $('#searchPanel'); if(sp){ sp.style.transform = 'none'; overlay.classList.add('open'); document.body.style.overflow = 'hidden'; setTimeout(()=>$('#searchInput').focus(),200); }
-  });
-  $('#searchInput').addEventListener('input', e=>renderSearch(e.target.value));
-  $('#sortSelect').addEventListener('change', e=>{ activeSort = e.target.value; renderCards(); });
-  $('#burger').addEventListener('click', ()=>{ const nav = document.querySelector('.nav-links'); if(nav) nav.style.display = nav.style.display === 'flex' ? 'none' : 'flex'; });
+  /* ===================== PERSONALIZATION ===================== */
+  function getPersonalization(){ return JSON.parse(localStorage.getItem('milly_personalization')||'null'); }
+  function savePersonalization(p){ localStorage.setItem('milly_personalization', JSON.stringify(p)); toast('Preferenze salvate'); }
+  function clearPersonalization(){ localStorage.removeItem('milly_personalization'); updatePersonalizePreview(); toast('Preferenze rimosse'); }
 
-  window.addEventListener('scroll', ()=>{ $('#nav').classList.toggle('scrolled', window.scrollY > 40); });
+  function updatePersonalizePreview(){
+    const p = getPersonalization();
+    const el = document.getElementById('personalizePreview');
+    if(!el) return;
+    if(!p) { el.textContent = 'Anteprima: nessuna preferenza impostata'; return; }
+    const parts = [];
+    if(p.initials) parts.push(`Iniziali: ${p.initials}`);
+    if(p.fodera) parts.push(`Fodera: ${p.fodera}`);
+    if(p.tracolla) parts.push(`Tracolla: ${p.tracolla}`);
+    if(p.note) parts.push(`Note: ${p.note}`);
+    el.textContent = parts.join(' · ') || 'Anteprima: nessuna preferenza impostata';
+  }
+
+  function initPersonalizeModal(){
+    const form = document.getElementById('personalizeForm');
+    if(!form) return;
+    const initials = document.getElementById('persInitials');
+    const fodera = document.getElementById('persFodera');
+    const tracolla = document.getElementById('persTracolla');
+    const note = document.getElementById('persNote');
+    const save = document.getElementById('savePersonalize');
+    const clear = document.getElementById('clearPersonalize');
+
+    const load = getPersonalization();
+    if(load){
+      if(initials) initials.value = load.initials || '';
+      if(fodera) fodera.value = load.fodera || '';
+      if(tracolla) tracolla.value = load.tracolla || '';
+      if(note) note.value = load.note || '';
+    }
+    updatePersonalizePreview();
+
+    if(save) save.addEventListener('click', ()=>{
+      const p = { initials: initials.value.trim(), fodera: fodera.value, tracolla: tracolla.value, note: note.value.trim() };
+      savePersonalization(p);
+      updatePersonalizePreview();
+      closeAll();
+    });
+    if(clear) clear.addEventListener('click', ()=>{
+      if(initials) initials.value = '';
+      if(fodera) fodera.value = '';
+      if(tracolla) tracolla.value = '';
+      if(note) note.value = '';
+      clearPersonalization();
+    });
+  }
+
+  /* ===================== GLOBAL EVENTI ===================== */
+  const openCartBtn = $('#openCart');
+  if(openCartBtn) openCartBtn.addEventListener('click', openCart);
+  const openWishBtn = $('#openWish');
+  if(openWishBtn) openWishBtn.addEventListener('click', ()=>{ renderWish(); openEl($('#wishDrawer')); });
+
+  const openSearchBtn = $('#openSearch');
+  if(openSearchBtn) openSearchBtn.addEventListener('click', ()=>{
+    renderSearch('');
+    const sp = $('#searchPanel'); if(sp){ sp.style.transform = 'none'; overlay.classList.add('open'); document.body.style.overflow = 'hidden'; setTimeout(()=>{ const inp = $('#searchInput'); if(inp) inp.focus(); },200); }
+  });
+  const searchInput = $('#searchInput');
+  if(searchInput) searchInput.addEventListener('input', e=>renderSearch(e.target.value));
+  const sortSelect = $('#sortSelect');
+  if(sortSelect) sortSelect.addEventListener('change', e=>{ activeSort = e.target.value; renderCards(); });
+  const burgerBtn = $('#burger');
+  if(burgerBtn) burgerBtn.addEventListener('click', ()=>{ const nav = document.querySelector('.nav-links'); if(nav) nav.style.display = nav.style.display === 'flex' ? 'none' : 'flex'; });
+
+  window.addEventListener('scroll', ()=>{ const navEl = $('#nav'); if(navEl) navEl.classList.toggle('scrolled', window.scrollY > 40); });
+
+  // personalization openers
+  const featurePersonalize = document.getElementById('featurePersonalize');
+  const openPersonalizeBtn = document.getElementById('openPersonalize');
+  if(featurePersonalize) featurePersonalize.addEventListener('click', ()=>{ initPersonalizeModal(); openEl($('#personalizeModal')); });
+  if(openPersonalizeBtn) openPersonalizeBtn.addEventListener('click', ()=>{ initPersonalizeModal(); openEl($('#personalizeModal')); });
 
   /* ===================== ANIMATIONS (GSAP/Lenis) ===================== */
   function revealInit(){
@@ -838,9 +1006,11 @@
   }
   function initAnim(){
     if(window.Lenis){
-      const lenis = new Lenis({lerp:.09,smoothWheel:true});
-      function raf(t){ lenis.raf(t); requestAnimationFrame(raf); } requestAnimationFrame(raf);
-      if(window.ScrollTrigger){ lenis.on('scroll', ScrollTrigger.update); }
+      try{
+        const lenis = new Lenis({lerp:.09,smoothWheel:true});
+        function raf(t){ lenis.raf(t); requestAnimationFrame(raf); } requestAnimationFrame(raf);
+        if(window.ScrollTrigger){ lenis.on('scroll', ScrollTrigger.update); }
+      }catch(e){ console.warn('Lenis init failed', e); }
     }
     if(window.gsap && window.ScrollTrigger){
       gsap.registerPlugin(ScrollTrigger);
@@ -864,6 +1034,9 @@
   renderWish();
   updateBadges();
   window.addEventListener('load', initAnim);
+
+  // small safeguard: ensure personalize modal preview initialized
+  setTimeout(()=>{ initPersonalizeModal(); }, 600);
 
   setTimeout(()=>{
     if(!window.gsap){ document.querySelectorAll('.reveal').forEach(e=>e.style.opacity = 1); document.querySelectorAll('#heroTitle .line i').forEach(e=>e.style.transform = 'none'); }
